@@ -52,19 +52,33 @@ class SyteTheme extends Theme
 
 		// TODO: Automatically add these to the Theme's block list on save
 		$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_tumbler', __CLASS__ . '__enable_tumbler', _t( 'Enable Tumbler Integration?', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_twitter', _t( 'Enable Twitter Integration?', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub Integration?', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble Integration?', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram Integration?', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_tumbler', __CLASS__ . '__enable_tumbler', _t( 'Enable Tumbler Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram Integration', 'syte' ) );
 
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
 		
 		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
-		$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
+		//$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
+		$ui->on_success( array( $this, 'store_options' ) );
 		$ui->out();
+	}
+	
+	/**
+	 * Save the configuration form an activate the blocks requested in the configuration.
+	 */
+	public function store_options( $ui )
+	{
+		
+		// Save our config
+		Options::set_group( __CLASS__, $options );
+		
+		// Force a full refresh to show our new blocks.
+		//Utils::redirect();
 	}
 	
 	/**
