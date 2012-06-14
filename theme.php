@@ -48,59 +48,22 @@ class SyteTheme extends Theme
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$fs = $ui->append( 'fieldset', 'fs_mode', '' );
-			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:' ) );
-			
-		$fs = $ui->append( 'fieldset', 'fs_tumbler', _t( 'Tumbler Integration' ) );
-			$fs->append( 'checkbox', 'enable_tumbler', __CLASS__ . '__enable_tumbler', _t( 'Enable Tumbler Integration?' ) );
-			// TODO: Make these appear only when above checkbox is ticked
-			$fs->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL' ) );
-			$fs->append( 'text', 'tumbler_api_key', __CLASS__ . '__tumbler_api_key', _t( 'Tumbler API Key' ) );
-		
-		// TODO: Implement Twitter authentication as used by the Twitter plugin. For the moment everything is hard coded.
-		$fs = $ui->append( 'fieldset', 'fs_twitter', __CLASS__ . '__enable_twitter', _t( 'Twitter Integration' ) );
-			$fs->append( 'checkbox', 'enable_twitter', _t( 'Enable Twitter Integration?' ) );
-			// TODO: Make these appear only when above checkbox is ticked
-			$fs->append( 'text', 'twitter_consumer_key', __CLASS__ . '__twitter_consumer_key', _t( 'Twitter Consumer Key' ) );
-			$fs->append( 'text', 'twitter_consumer_secret', __CLASS__ . '__twitter_consumer_secret', _t( 'Twitter Consumer Secret' ) );
-			$fs->append( 'text', 'twitter_user_key', __CLASS__ . '__twitter_user_key', _t( 'Twitter User Key' ) );
-			$fs->append( 'text', 'twitter_user_secret', __CLASS__ . '__twitter_user_secret', _t( 'Twitter User Secret' ) );
-			
-		// TODO: See if we can obtain this information like we can with Twitter
-		$fs = $ui->append( 'fieldset', 'fs_github', _t( 'GitHub Integration' ) );
-			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub Integration?' ) );
-			// TODO: Make these appear only when above checkbox is ticked
-			$fs->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token' ) );
-			$fs->append( 'text', 'github_client_id', __CLASS__ . '__github_client_id', _t( 'GitHub Client ID' ) );
-			// TODO: I think these should be hardcoded and specific to this plugin
-			$fs->append( 'text', 'github_client_secret', __CLASS__ . '__github_client_secret', _t( 'GitHub Client Secret' ) );
-			$fs->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token' ) );
-			
-		$fs = $ui->append( 'fieldset', 'fs_dribble', _t( 'Dribble Integration' ) );
-			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble Integration?' ) );
-		
-		// TODO: See if we can obtain this information like we can with Twitter
-		$fs = $ui->append( 'fieldset', 'fs_instagram', _t( 'Instagram Integration' ) );
-			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram Integration?' ) );
-			// TODO: Make these appear only when above checkbox is ticked
-			$fs->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token' ) );
-			$fs->append( 'text', 'instagram_user_id', __CLASS__ . '__instagram_user_id', _t( 'Instagram User ID' ) );
-			// TODO: I think these should be hardcoded and specific to this plugin
-			$fs->append( 'text', 'instagram_client_id', __CLASS__ . '__instagram_client_id', _t( 'Instagram Client ID' ) );
-			$fs->append( 'text', 'instagram_client_secret', __CLASS__ . '__instagram_client_secret', _t( 'Instagram Client Secret' ) );
+			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
-		
-		// TODO: See if we can obtain this information like we can with Twitter. We can probably take this from the Flickr plugin
-		$fs = $ui->append( 'fieldset', 'fs_flickr', _t( 'Flickr Integration' ) );
-			$fs->append( 'checkbox', 'enable_flickr', __CLASS__ . '__enable_flickr', _t( 'Enable Flickr Integration?' ) );
-			// TODO: Make these appear only when above checkbox is ticked
-			
-		// TODO: Make this extensible by other plugins here.
-		
-		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings' ) );
+		// TODO: Automatically add these to the Theme's block list on save
+		$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_tumbler', __CLASS__ . '__enable_tumbler', _t( 'Enable Tumbler Integration?', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_twitter', _t( 'Enable Twitter Integration?', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub Integration?', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble Integration?', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram Integration?', 'syte' ) );
+
+
+		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
 		
 		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
-		$ui->set_option( 'success_message', _t( 'Options saved' ) );
+		$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
 		$ui->out();
 	}
 	
@@ -132,9 +95,6 @@ class SyteTheme extends Theme
 		
 	}
 	
-
-
-	
 	public function filter_post_tags_out( $terms )
 	{
 		$array = array();
@@ -153,6 +113,88 @@ class SyteTheme extends Theme
 		// $last = array_pop( $array );
 		$out = implode( ', ', $array );
 		return $out;
+	}
+	
+	/**
+	 * Add the blocks to the list of selectable blocks
+	 */
+	public function filter_block_list( $block_list )
+	{
+		$block_list[ 'tumblr' ] = _t( 'Tumblr Integration', 'syte' );
+		$block_list[ 'twitter' ] = _t( 'Twitter Integration', 'syte' );
+		$block_list[ 'github' ] = _t( 'Github Integration', 'syte' );
+		$block_list[ 'dribble' ] = _t( 'Dribble Integration', 'syte' );
+		$block_list[ 'instagram' ] = _t( 'Instagram Integration', 'syte' );
+		
+		return $block_list;
+	}
+	
+	/**
+	 * Configure the tumblr block
+	 */
+	public function action_block_form_tumblr( $form, $block )
+	{
+		$ui = new FormUI( strtolower( __CLASS__ ) );
+		$ui->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL', 'syte' ) );
+		$ui->append( 'text', 'tumbler_api_key', __CLASS__ . '__tumbler_api_key', _t( 'Tumbler API Key', 'syte' ) );
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
+	}
+	
+	/**
+	 * Configure the twitter block
+	 * 
+	 * @todo: Implement Twitter authentication as used by the Twitter plugin. For the moment everything is hard coded.
+	 */
+	public function action_block_form_twitter( $form, $block )
+	{
+		$ui = new FormUI( strtolower( __CLASS__ ) );
+		$ui->append( 'text', 'twitter_consumer_key', __CLASS__ . '__twitter_consumer_key', _t( 'Twitter Consumer Key', 'syte' ) );
+		$ui->append( 'text', 'twitter_consumer_secret', __CLASS__ . '__twitter_consumer_secret', _t( 'Twitter Consumer Secret', 'syte' ) );
+		$ui->append( 'text', 'twitter_user_key', __CLASS__ . '__twitter_user_key', _t( 'Twitter User Key', 'syte' ) );
+		$ui->append( 'text', 'twitter_user_secret', __CLASS__ . '__twitter_user_secret', _t( 'Twitter User Secret', 'syte' ) );
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
+	}
+	
+	/**
+	 * Configure the github block
+	 * 
+	 * @todo: See if we can obtain this information like we can with Twitter
+	 */
+	public function action_block_form_github( $form, $block )
+	{
+		$ui = new FormUI( strtolower( __CLASS__ ) );
+		$ui->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
+		$ui->append( 'text', 'github_client_id', __CLASS__ . '__github_client_id', _t( 'GitHub Client ID', 'syte' ) );
+		// TODO: I think these should be hardcoded and specific to this plugin
+		$ui->append( 'text', 'github_client_secret', __CLASS__ . '__github_client_secret', _t( 'GitHub Client Secret', 'syte' ) );
+		$ui->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
+	}
+	
+	/**
+	 * Configure the dribble block
+	 * 
+	 */
+	public function action_block_form_dribble( $form, $block )
+	{
+		$ui = new FormUI( strtolower( __CLASS__ ) );
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
+	}
+	
+	/**
+	 * Configure the instagram block
+	 * 
+	 * @todo: See if we can obtain this information like we can with Twitter
+	 */
+	public function action_block_form_instagram( $form, $block )
+	{
+		$ui = new FormUI( strtolower( __CLASS__ ) );
+		$ui->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token', 'syte' ) );
+		$ui->append( 'text', 'instagram_user_id', __CLASS__ . '__instagram_user_id', _t( 'Instagram User ID', 'syte' ) );
+		// TODO: I think these should be hardcoded and specific to this plugin
+		$ui->append( 'text', 'instagram_client_id', __CLASS__ . '__instagram_client_id', _t( 'Instagram Client ID', 'syte' ) );
+		$ui->append( 'text', 'instagram_client_secret', __CLASS__ . '__instagram_client_secret', _t( 'Instagram Client Secret', 'syte' ) );
+		$ui->append( 'submit', 'save', _t( 'Save' ) );
 	}
 	
 	
