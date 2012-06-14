@@ -50,35 +50,58 @@ class SyteTheme extends Theme
 		$fs = $ui->append( 'fieldset', 'fs_mode', '' );
 			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
-		// TODO: Automatically add these to the Theme's block list on save
 		$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_tumbler', __CLASS__ . '__enable_tumbler', _t( 'Enable Tumbler Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram Integration', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_tumblr', __CLASS__ . '__enable_tumblr', _t( 'Enable Tumblr', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram', 'syte' ) );
 
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
 		
 		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
-		//$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
-		$ui->on_success( array( $this, 'store_options' ) );
+		$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
+		$ui->on_success( array( $this, 'enable_integrations' ) );
 		$ui->out();
 	}
 	
 	/**
-	 * Save the configuration form an activate the blocks requested in the configuration.
+	 * Save the configuration form and activate the blocks requested in the configuration.
 	 */
-	public function store_options( $ui )
+	public function enable_integrations( $ui )
 	{
-		
 		// Save our config
-		Options::set_group( __CLASS__, $options );
+		$ui->save();
+
+		// Get the current blocks list
+		$blocks = $this->get_blocks( 'sidebar', 0, $this );
+		// I think we need a has() function for blocks to make this easier.
+		// Parse the blocks and grab just the types into an array
+		$blocks_types = array();
+		foreach( $blocks as $block ) {
+			$block_types[] = $block->type;
+		}
+
+		// Check if we have the requested block enabled or not. If not, enable it.
+		// TODO: Do we want to remove the block if the config form has the field unchecked?
+		foreach( $ui->controls['fs_enable']->controls as $component ) {
+			$comp_name = explode( '_', $component->name );
+			$block_name = $comp_name[1];
+			if ( $component->value === true && !in_array( 'syte_' . $block_name, $block_types ) ) {
+				$block = new Block( array(
+					'title' => ucfirst( $block_name ),
+					'type' => 'syte_' . $block_name,
+				) );
+			
+				$block->add_to_area( 'sidebar' );
+				Session::notice( _t( 'Added ' . ucfirst( $block_name ) . 'block to sidebar area.' ) );
+			}
+		}
 		
 		// Force a full refresh to show our new blocks.
-		//Utils::redirect();
+		Utils::redirect();
 	}
 	
 	/**
@@ -96,9 +119,11 @@ class SyteTheme extends Theme
             $this->assign('loggedin', User::identify()->loggedin );
         }
 	
+		$theme_opts = Options::get_group( __CLASS__ );
 		// Add CSS
-		if ( Options::get( 'SyteTheme__dev_mode' ) ) {
-			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
+		if ( $theme_opts['dev_mode'] ) {
+			// TODO: Need to change the "rel"
+			//Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
 			//<link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/styles.less">
 			Stack::add( 'template_header_javascript', Site::get_url( 'theme' ) . '/css/less/less-1.1.5.min.js', 'less' );
 		} else {
@@ -106,7 +131,27 @@ class SyteTheme extends Theme
 		}
 		
 		// Add other javascript support files
+		Stack::add( 'template_footer_javascript', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 		
+		// Now for some magic.  Lets generate the intergration variables and load the necessary scripts in one go
+		$int_var_str = 'var ';
+		foreach( $theme_opts as $option => $val ) {
+			if ( preg_match('/^enable_(.+)$/', $option, $matches ) ) {
+				$int_var_str .= $matches[1] . '_integration_enabled = ';
+				if ( $val == 1 ) {
+					$int_var_str .= 'true,';
+					Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/' . $matches[1] . '.js', 'integration_js', 'intergration_vars' );
+				} else {
+					$int_var_str .= 'false,';
+				}
+			}
+		}
+		
+		Stack::add( 'template_footer_javascript', '
+			/*<![CDATA[*/
+			' . rtrim($int_var_str, ',') .';
+			/*]]>*/
+			', 'integration_vars', 'jquery' );
 	}
 	
 	public function filter_post_tags_out( $terms )
@@ -134,11 +179,11 @@ class SyteTheme extends Theme
 	 */
 	public function filter_block_list( $block_list )
 	{
-		$block_list[ 'tumblr' ] = _t( 'Tumblr Integration', 'syte' );
-		$block_list[ 'twitter' ] = _t( 'Twitter Integration', 'syte' );
-		$block_list[ 'github' ] = _t( 'Github Integration', 'syte' );
-		$block_list[ 'dribble' ] = _t( 'Dribble Integration', 'syte' );
-		$block_list[ 'instagram' ] = _t( 'Instagram Integration', 'syte' );
+		$block_list[ 'syte_tumblr' ] = _t( 'Syte - Tumblr Integration', 'syte' );
+		$block_list[ 'syte_twitter' ] = _t( 'Syte - Twitter Integration', 'syte' );
+		$block_list[ 'syte_github' ] = _t( 'Syte - Github Integration', 'syte' );
+		$block_list[ 'syte_dribble' ] = _t( 'Syte - Dribble Integration', 'syte' );
+		$block_list[ 'syte_instagram' ] = _t( 'Syte - Instagram Integration', 'syte' );
 		
 		return $block_list;
 	}
@@ -146,7 +191,7 @@ class SyteTheme extends Theme
 	/**
 	 * Configure the tumblr block
 	 */
-	public function action_block_form_tumblr( $form, $block )
+	public function action_block_form_syte_tumblr( $form, $block )
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$ui->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL', 'syte' ) );
@@ -159,7 +204,7 @@ class SyteTheme extends Theme
 	 * 
 	 * @todo: Implement Twitter authentication as used by the Twitter plugin. For the moment everything is hard coded.
 	 */
-	public function action_block_form_twitter( $form, $block )
+	public function action_block_form_syte_twitter( $form, $block )
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$ui->append( 'text', 'twitter_consumer_key', __CLASS__ . '__twitter_consumer_key', _t( 'Twitter Consumer Key', 'syte' ) );
@@ -174,7 +219,7 @@ class SyteTheme extends Theme
 	 * 
 	 * @todo: See if we can obtain this information like we can with Twitter
 	 */
-	public function action_block_form_github( $form, $block )
+	public function action_block_form_syte_github( $form, $block )
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$ui->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
@@ -189,7 +234,7 @@ class SyteTheme extends Theme
 	 * Configure the dribble block
 	 * 
 	 */
-	public function action_block_form_dribble( $form, $block )
+	public function action_block_form_syte_dribble( $form, $block )
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
@@ -200,7 +245,7 @@ class SyteTheme extends Theme
 	 * 
 	 * @todo: See if we can obtain this information like we can with Twitter
 	 */
-	public function action_block_form_instagram( $form, $block )
+	public function action_block_form_syte_instagram( $form, $block )
 	{
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$ui->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token', 'syte' ) );
