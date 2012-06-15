@@ -57,8 +57,14 @@ class SyteTheme extends Theme
 			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram', 'syte' ) );
 
+		$fs = $ui->append( 'fieldset', 'fs_other_config', _t( 'Other Settings', 'syte' ) );
+			/*$fs->append( 'text', 'syte_title', __CLASS__ . '__syte_title', _t( 'Syte Title:', 'syte' ) );
+			$fs->syte_title->helptext = _t( 'If this is left blank, the site-wide title set under Options will be used.' );
+			$fs->append( 'text', 'syte_tagline', __CLASS__ . '__syte_tagline', _t( 'Syte Tagline:', 'syte' ) );
+			$fs->syte_tagline->helptext = _t( 'If this is left blank, the site-wide tagline set under Options will be used.' );*/
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
+			$fs->append( 'text', 'syte_color', __CLASS__ . '__syte_color', _t( 'Primary Color', 'syte' ) );
 		
 		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
@@ -96,7 +102,7 @@ class SyteTheme extends Theme
 				) );
 			
 				$block->add_to_area( 'sidebar' );
-				Session::notice( _t( 'Added ' . ucfirst( $block_name ) . 'block to sidebar area.' ) );
+				Session::notice( _t( 'Added ' . ucfirst( $block_name ) . ' block to sidebar area.' ) );
 			}
 		}
 		
@@ -126,8 +132,25 @@ class SyteTheme extends Theme
 			//Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
 			//<link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/styles.less">
 			Stack::add( 'template_header_javascript', Site::get_url( 'theme' ) . '/css/less/less-1.1.5.min.js', 'less' );
+			
+			// Load the dev libs.  Not sure if they all require jquery at the moment
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/require.js', 'require', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/handlebars.js', 'handlebars', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/moment.min.js', 'moment', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/bootstrap-modal.js', 'bootstrap', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/spin.min.js', 'spin', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/prettify.js', 'prettyfy', 'jquery' );
+			
+			
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/base.js', 'base', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/mobile.js', 'mobile', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/blog-posts.js', 'blog-posts', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/links.js', 'links', 'jquery' );
+
 		} else {
 			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/styles-{{ COMPRESS_REVISION_NUMBER }}.min.css', 'screen, projection' ), 'style' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts-{{ COMPRESS_REVISION_NUMBER }}.min.js', 'links', 'jquery' );
 		}
 		
 		// Add other javascript support files
@@ -152,6 +175,22 @@ class SyteTheme extends Theme
 			' . rtrim($int_var_str, ',') .';
 			/*]]>*/
 			', 'integration_vars', 'jquery' );
+		
+		Stack::add( 'template_footer_javascript', '
+			$(function() {
+				/* {% if post_id %}
+					fetchBlogPosts("{{post_id}}")
+					{% elif tag_slug %}
+					fetchBlogPosts(null, "{{tag_slug}}");
+					{% else %}
+					fetchBlogPosts();
+					{% endif %}
+				*/
+				fetchBlogPosts();
+			});
+
+			', 'extra_js', 'integration_vars' );
+		
 	}
 	
 	public function filter_post_tags_out( $terms )
