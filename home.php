@@ -37,7 +37,7 @@ $theme->display( 'header' ); ?>
 		<?php if ( count( $post->tags ) > 0 ) : ?>
 		<footer>
 			<h4>Tags</h4>
-			<?php $post->tags_out; ?>
+			<?php echo $post->tags_out; ?>
 		</footer>
 		<?php endif; ?>
 	</article>
