@@ -5,7 +5,8 @@ function numberWithCommas(x) {
 }
 
 require.config({
-  baseUrl: "/static/",
+  //baseUrl: "/static/",
+  baseUrl: "user/themes/syte/",
   paths: {
     "text": "js/libs/text",
     "json": "js/libs/json"
