@@ -28,10 +28,10 @@ $theme->display( 'header' ); ?>
  */ ?>
 <section class="main-section blog-section" id="blog-posts">
 	<?php foreach ( $posts as $post ) : ?>
-	<article class="post">
+	<article class="post" id="<?php echo $post->id; ?>">
 		<hgroup>
 			<h2><a href="<?php echo $post->permalink; ?>" title="<?php echo $post->title; ?>"><?php echo $post->title_out; ?>&nbsp;</a></h2>
-			<h3><a href="#{{ id }}" class="active adjusted"><?php $post->pubdate->out('d M y'); ?></a></h3>
+			<h3><a href="#<?php echo $post->id; ?>" class=""><?php $post->pubdate->out('d M y'); ?></a></h3>
 		</hgroup>
 		<?php echo $post->content_out; ?>
 		<?php if ( count( $post->tags ) > 0 ) : ?>
