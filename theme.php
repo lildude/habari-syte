@@ -20,6 +20,15 @@ class SyteTheme extends Theme
 	public function action_theme_activation( )
 	{
 		// Add activation actions here
+		$this->add_template( 'block.twitter', dirname( __FILE__ ) . '/blocks/block.twitter.php' );
+		$this->add_template( 'block.tumbler', dirname( __FILE__ ) . '/blocks/block.tumbler.php' );
+		$this->add_template( 'block.github', dirname( __FILE__ ) . '/blocks/block.github.php' );
+		$this->add_template( 'block.dribbble', dirname( __FILE__ ) . '/blocks/block.dribbble.php' );
+		$this->add_template( 'block.instagram', dirname( __FILE__ ) . '/blocks/block.instagram.php' );
+		
+		
+		// i18n
+		$this->load_text_domain( 'syte' );
 	}
 
 	/**
@@ -54,7 +63,7 @@ class SyteTheme extends Theme
 			$fs->append( 'checkbox', 'enable_tumblr', __CLASS__ . '__enable_tumblr', _t( 'Enable Tumblr', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_dribble', __CLASS__ . '__enable_dribble', _t( 'Enable Dribble', 'syte' ) );
+			$fs->append( 'checkbox', 'enable_dribbble', __CLASS__ . '__enable_dribbble', _t( 'Enable dribbble', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram', 'syte' ) );
 
 		$fs = $ui->append( 'fieldset', 'fs_other_config', _t( 'Other Settings', 'syte' ) );
@@ -172,7 +181,7 @@ class SyteTheme extends Theme
 		
 		Stack::add( 'template_footer_javascript', '
 			/*<![CDATA[*/
-			' . rtrim($int_var_str, ',') .';
+			' . rtrim( $int_var_str, ',' ) .';
 			/*]]>*/
 			', 'integration_vars', 'jquery' );
 		
@@ -221,7 +230,7 @@ class SyteTheme extends Theme
 		$block_list[ 'syte_tumblr' ] = _t( 'Syte - Tumblr Integration', 'syte' );
 		$block_list[ 'syte_twitter' ] = _t( 'Syte - Twitter Integration', 'syte' );
 		$block_list[ 'syte_github' ] = _t( 'Syte - Github Integration', 'syte' );
-		$block_list[ 'syte_dribble' ] = _t( 'Syte - Dribble Integration', 'syte' );
+		$block_list[ 'syte_dribbble' ] = _t( 'Syte - dribbble Integration', 'syte' );
 		$block_list[ 'syte_instagram' ] = _t( 'Syte - Instagram Integration', 'syte' );
 		
 		return $block_list;
@@ -232,10 +241,16 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_tumblr( $form, $block )
 	{
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL', 'syte' ) );
-		$ui->append( 'text', 'tumbler_api_key', __CLASS__ . '__tumbler_api_key', _t( 'Tumbler API Key', 'syte' ) );
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$form->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL', 'syte' ) );
+		$form->append( 'text', 'tumbler_api_key', __CLASS__ . '__tumbler_api_key', _t( 'Tumbler API Key', 'syte' ) );
+	}
+	
+	/**
+	 * Populate the tumblr block with some content
+	 **/
+	public function action_block_content_syte_tumblr( $block, $theme )
+	{
+		
 	}
 	
 	/**
@@ -245,12 +260,18 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_twitter( $form, $block )
 	{
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'text', 'twitter_consumer_key', __CLASS__ . '__twitter_consumer_key', _t( 'Twitter Consumer Key', 'syte' ) );
-		$ui->append( 'text', 'twitter_consumer_secret', __CLASS__ . '__twitter_consumer_secret', _t( 'Twitter Consumer Secret', 'syte' ) );
-		$ui->append( 'text', 'twitter_user_key', __CLASS__ . '__twitter_user_key', _t( 'Twitter User Key', 'syte' ) );
-		$ui->append( 'text', 'twitter_user_secret', __CLASS__ . '__twitter_user_secret', _t( 'Twitter User Secret', 'syte' ) );
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$form->append( 'text', 'twitter_consumer_key', $block, _t( 'Twitter Consumer Key', 'syte' ) );
+		$form->append( 'text', 'twitter_consumer_secret', $block, _t( 'Twitter Consumer Secret', 'syte' ) );
+		$form->append( 'text', 'twitter_user_key', $block, _t( 'Twitter User Key', 'syte' ) );
+		$form->append( 'text', 'twitter_user_secret', $block, _t( 'Twitter User Secret', 'syte' ) );
+	}
+	
+	/**
+	 * Populate the twitter block with some content
+	 **/
+	public function action_block_content_syte_twitter( $block, $theme )
+	{
+		
 	}
 	
 	/**
@@ -260,23 +281,36 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_github( $form, $block )
 	{
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
-		$ui->append( 'text', 'github_client_id', __CLASS__ . '__github_client_id', _t( 'GitHub Client ID', 'syte' ) );
+		$form->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
+		$form->append( 'text', 'github_client_id', __CLASS__ . '__github_client_id', _t( 'GitHub Client ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
-		$ui->append( 'text', 'github_client_secret', __CLASS__ . '__github_client_secret', _t( 'GitHub Client Secret', 'syte' ) );
-		$ui->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$form->append( 'text', 'github_client_secret', __CLASS__ . '__github_client_secret', _t( 'GitHub Client Secret', 'syte' ) );
+		$form->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
 	}
 	
 	/**
-	 * Configure the dribble block
+	 * Populate the github block with some content
+	 **/
+	public function action_block_content_syte_github( $block, $theme )
+	{
+		
+	}
+	
+	/**
+	 * Configure the dribbble block
 	 * 
 	 */
-	public function action_block_form_syte_dribble( $form, $block )
+	public function action_block_form_syte_dribbble( $form, $block )
 	{
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+
+	}
+	
+	/**
+	 * Populate the dribbble block with some content
+	 **/
+	public function action_block_content_syte_dribbble( $block, $theme )
+	{
+		
 	}
 	
 	/**
@@ -286,21 +320,28 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_instagram( $form, $block )
 	{
-		$ui = new FormUI( strtolower( __CLASS__ ) );
-		$ui->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token', 'syte' ) );
-		$ui->append( 'text', 'instagram_user_id', __CLASS__ . '__instagram_user_id', _t( 'Instagram User ID', 'syte' ) );
+		$form->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token', 'syte' ) );
+		$form->append( 'text', 'instagram_user_id', __CLASS__ . '__instagram_user_id', _t( 'Instagram User ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
-		$ui->append( 'text', 'instagram_client_id', __CLASS__ . '__instagram_client_id', _t( 'Instagram Client ID', 'syte' ) );
-		$ui->append( 'text', 'instagram_client_secret', __CLASS__ . '__instagram_client_secret', _t( 'Instagram Client Secret', 'syte' ) );
-		$ui->append( 'submit', 'save', _t( 'Save' ) );
+		$form->append( 'text', 'instagram_client_id', __CLASS__ . '__instagram_client_id', _t( 'Instagram Client ID', 'syte' ) );
+		$form->append( 'text', 'instagram_client_secret', __CLASS__ . '__instagram_client_secret', _t( 'Instagram Client Secret', 'syte' ) );
 	}
+	
+	/**
+	 * Populate the instagram block with some content
+	 **/
+	public function action_block_content_syte_instagram( $block, $theme )
+	{
+		
+	}
+	
 	
 	
 	/*********************** Helper Functions *************************************
 	 * Most of these functions should probably go into a plugin.  We'll see about
 	 * that as I develop the theme.
 	 */
-
+	
 		 
 }
 ?>
