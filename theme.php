@@ -179,7 +179,7 @@ class SyteTheme extends Theme
 				$int_var_str .= $matches[1] . '_integration_enabled = ';
 				if ( $val == 1 ) {
 					$int_var_str .= 'true,';
-					Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/' . $matches[1] . '.js', 'integration_js', 'intergration_vars' );
+					Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/' . $matches[1] . '.js', $matches[1] . '_integration_js', 'intergration_vars' );
 				} else {
 					$int_var_str .= 'false,';
 				}
@@ -242,6 +242,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_tumblr( $form, $block )
 	{
+		
 		$form->append( 'text', 'tumbler_blog_url', $block, _t( 'Tumbler Blog URL', 'syte' ) );
 		$form->append( 'text', 'tumbler_api_key', $block, _t( 'Tumbler API Key', 'syte' ) );
 	}
@@ -261,6 +262,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_twitter( $form, $block )
 	{
+		$form->append( 'text', 'url', $block, _t( 'Twitter URL', 'syte' ) );
 		$form->append( 'text', 'twitter_consumer_key', $block, _t( 'Twitter Consumer Key', 'syte' ) );
 		$form->append( 'text', 'twitter_consumer_secret', $block, _t( 'Twitter Consumer Secret', 'syte' ) );
 		$form->append( 'text', 'twitter_user_key', $block, _t( 'Twitter User Key', 'syte' ) );
@@ -272,7 +274,7 @@ class SyteTheme extends Theme
 	 **/
 	public function action_block_content_syte_twitter( $block, $theme )
 	{
-		$block->twitter = "foo";
+	
 	}
 	
 	/**
@@ -282,11 +284,11 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_github( $form, $block )
 	{
+		$form->append( 'text', 'url', $block, _t( 'GitHub URL' ) );
 		$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
 		$form->append( 'text', 'github_client_id', $block, _t( 'GitHub Client ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
 		$form->append( 'text', 'github_client_secret', $block, _t( 'GitHub Client Secret', 'syte' ) );
-		$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
 	}
 	
 	/**
@@ -294,7 +296,7 @@ class SyteTheme extends Theme
 	 **/
 	public function action_block_content_syte_github( $block, $theme )
 	{
-		
+
 	}
 	
 	/**
@@ -335,6 +337,8 @@ class SyteTheme extends Theme
 	{
 		
 	}
+	
+	
 	
 	
 	
