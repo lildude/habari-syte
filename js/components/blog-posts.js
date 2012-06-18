@@ -1,5 +1,5 @@
 
-function fetchBlogPosts(post, tag) {
+function fetchBlogPosts(post, tag) {	
   var blog_fetch_url = '/blog.json';
 
   if (post)
@@ -7,6 +7,7 @@ function fetchBlogPosts(post, tag) {
   else if (tag)
       blog_fetch_url = '/tags/' + tag;
 
+ /* We don't need this on Habari. 
   $.getJSON(blog_fetch_url, function(blog_posts) {
       require(["text!templates/blog-post-text.html",
               "text!templates/blog-post-photo.html",
@@ -44,14 +45,14 @@ function fetchBlogPosts(post, tag) {
                     $('#blog-posts').append(quote_template(p));
 
             });
-
+*/
             setupLinks();
             adjustBlogHeaders();
             prettyPrint();
             setTimeout(setupBlogHeaderScroll, 1000);
             adjustSelection('home-link');
-         });
-  });
+         //});
+  //});
 }
 
 function adjustBlogHeaders() {
