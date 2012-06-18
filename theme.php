@@ -202,24 +202,18 @@ class SyteTheme extends Theme
 		
 	}
 	
-	public function filter_post_tags_out( $terms )
+	/**
+	 * Convert a post's tags array into a usable list of links
+	 *
+	 * @param array $array The tags array from a Post object
+	 * @return string The HTML of the linked tags
+	 */
+	public function filter_post_tags_out( $array )
 	{
-		$array = array();
-		if ( !$terms instanceof Terms ) {
-			$terms = new Terms( $terms );
-		}
-
-		foreach ( $terms as $term ) {
-			$array[$term->term] = $term->term_display;
-		}
-		
-		ksort( $array );
-		
-		$fn = create_function( '$a,$b', 'return "<a href=\\"" . URL::get("display_entries_by_tag", array( "tag" => $b) ) . "\\" rel=\\"tag\\">" . $a . "</a>";' );
-		$array = array_map( $fn, $array, array_keys( $array ) );
-		// $last = array_pop( $array );
-		$out = implode( ', ', $array );
-		return $out;
+		$fn = function($a) {return "<li><a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $a->term) ) . "\">" . $a->term_display . "</a></li>";};
+		$array = array_map( $fn, (array)$array );
+		$out = implode( ' ', $array );
+		return '<ul class="tags">' . $out . '</ul>';
 	}
 	
 	/**
