@@ -134,6 +134,11 @@ class SyteTheme extends Theme
             $this->assign('loggedin', User::identify()->loggedin );
         }
 	
+		// Make posts an instance of Posts if it's just one
+		if ( $this->posts instanceof Post ) {
+			$this->posts = new Posts( array( $this->posts ) );
+		}
+		
 		$theme_opts = Options::get_group( __CLASS__ );
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
