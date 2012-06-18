@@ -19,6 +19,7 @@ function setupTwitter(url, el) {
      var spinner = new Spinner(spin_opts).spin();
      $('#twitter-link').append(spinner.el);
 
+	 // TODO: Need to dynamically determine this
      require(["json!/~col/habari/twitter/" + username, "text!templates/twitter-view.html"], 
         function(twitter_data, twitter_view) {
             if (twitter_data.error || twitter_data.length == 0) {
@@ -30,7 +31,7 @@ function setupTwitter(url, el) {
 
             var tweets = [];
             $.each(twitter_data, function(i, t) {
-              if (i > 3)
+              if (i > 4)		// TODO: Can we make this configurable?
                 return;
 
               //'ddd MMM DD HH:mm:ss ZZ YYYY'
