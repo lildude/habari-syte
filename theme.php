@@ -12,6 +12,7 @@ class SyteTheme extends Theme
 		// Truncate content excerpt at "more" or 56 characters...
 		Format::apply( 'autop', 'post_content_excerpt' );
 		Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'Continue reading...', 200, 1 );
+		
 	}
 
 	/**
@@ -19,16 +20,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_theme_activation( )
 	{
-		// Add activation actions here
-		$this->add_template( 'block.twitter', dirname( __FILE__ ) . '/blocks/block.twitter.php' );
-		$this->add_template( 'block.tumbler', dirname( __FILE__ ) . '/blocks/block.tumbler.php' );
-		$this->add_template( 'block.github', dirname( __FILE__ ) . '/blocks/block.github.php' );
-		$this->add_template( 'block.dribbble', dirname( __FILE__ ) . '/blocks/block.dribbble.php' );
-		$this->add_template( 'block.instagram', dirname( __FILE__ ) . '/blocks/block.instagram.php' );
 		
-		
-		// i18n
-		$this->load_text_domain( 'syte' );
 	}
 
 	/**
@@ -124,6 +116,16 @@ class SyteTheme extends Theme
 	 */
 	public function add_template_vars()
 	{
+		$this->add_template( 'block.syte_twitter', dirname( __FILE__ ) . '/blocks/block.twitter.php' );
+		$this->add_template( 'block.syte_tumbler', dirname( __FILE__ ) . '/blocks/block.tumbler.php' );
+		$this->add_template( 'block.syte_github', dirname( __FILE__ ) . '/blocks/block.github.php' );
+		$this->add_template( 'block.syte_dribbble', dirname( __FILE__ ) . '/blocks/block.dribbble.php' );
+		$this->add_template( 'block.syte_instagram', dirname( __FILE__ ) . '/blocks/block.instagram.php' );
+		
+		
+		// i18n
+		$this->load_text_domain( 'syte' );
+		
 		if ( !$this->template_engine->assigned( 'pages' ) ) {
             $this->assign('pages', Posts::get( array( 'content_type' => 'page', 'status' => Post::status( 'published' ), 'nolimit' => 1 ) ) );
         }
@@ -215,7 +217,7 @@ class SyteTheme extends Theme
 	 */
 	public function filter_post_tags_out( $array )
 	{
-		$fn = function($a) {return "<li><a href=\"" . URL::get("display_entries_by_tag", array( "tag" => $a->term) ) . "\">" . $a->term_display . "</a></li>";};
+		$fn = function($a) {return "<li><a href=\"" . URL::get( "display_entries_by_tag", array( "tag" => $a->term ) ) . "\">" . $a->term_display . "</a></li>";};
 		$array = array_map( $fn, (array)$array );
 		$out = implode( ' ', $array );
 		return '<ul class="tags">' . $out . '</ul>';
@@ -240,8 +242,8 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_tumblr( $form, $block )
 	{
-		$form->append( 'text', 'tumbler_blog_url', __CLASS__ . '__tumbler_blog_url', _t( 'Tumbler Blog URL', 'syte' ) );
-		$form->append( 'text', 'tumbler_api_key', __CLASS__ . '__tumbler_api_key', _t( 'Tumbler API Key', 'syte' ) );
+		$form->append( 'text', 'tumbler_blog_url', $block, _t( 'Tumbler Blog URL', 'syte' ) );
+		$form->append( 'text', 'tumbler_api_key', $block, _t( 'Tumbler API Key', 'syte' ) );
 	}
 	
 	/**
@@ -270,7 +272,7 @@ class SyteTheme extends Theme
 	 **/
 	public function action_block_content_syte_twitter( $block, $theme )
 	{
-		
+		$block->twitter = "foo";
 	}
 	
 	/**
@@ -280,11 +282,11 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_github( $form, $block )
 	{
-		$form->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
-		$form->append( 'text', 'github_client_id', __CLASS__ . '__github_client_id', _t( 'GitHub Client ID', 'syte' ) );
+		$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
+		$form->append( 'text', 'github_client_id', $block, _t( 'GitHub Client ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
-		$form->append( 'text', 'github_client_secret', __CLASS__ . '__github_client_secret', _t( 'GitHub Client Secret', 'syte' ) );
-		$form->append( 'text', 'github_access_token', __CLASS__ . '__github_access_token', _t( 'GitHub Access Token', 'syte' ) );
+		$form->append( 'text', 'github_client_secret', $block, _t( 'GitHub Client Secret', 'syte' ) );
+		$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
 	}
 	
 	/**
@@ -319,11 +321,11 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_instagram( $form, $block )
 	{
-		$form->append( 'text', 'instagram_access_token', __CLASS__ . '__instagram_access_token', _t( 'Instagram Access Token', 'syte' ) );
-		$form->append( 'text', 'instagram_user_id', __CLASS__ . '__instagram_user_id', _t( 'Instagram User ID', 'syte' ) );
+		$form->append( 'text', 'instagram_access_token', $block, _t( 'Instagram Access Token', 'syte' ) );
+		$form->append( 'text', 'instagram_user_id', $block, _t( 'Instagram User ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
-		$form->append( 'text', 'instagram_client_id', __CLASS__ . '__instagram_client_id', _t( 'Instagram Client ID', 'syte' ) );
-		$form->append( 'text', 'instagram_client_secret', __CLASS__ . '__instagram_client_secret', _t( 'Instagram Client Secret', 'syte' ) );
+		$form->append( 'text', 'instagram_client_id', $block, _t( 'Instagram Client ID', 'syte' ) );
+		$form->append( 'text', 'instagram_client_secret', $block, _t( 'Instagram Client Secret', 'syte' ) );
 	}
 	
 	/**
