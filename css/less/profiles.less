@@ -134,6 +134,7 @@
   border-bottom: 1px solid #c2c2c2;
 }
 
+/*
 //Profile Icons
 .profile-icons(@bgicon) {
   display: inline-block;
@@ -157,6 +158,14 @@
 .profile-likes {
   .profile-icons(~"url('../../imgs/ico-likes.png') no-repeat");
 }
+*/
+
+// CNS: Need to change this so relative paths work
+.profile-watchers, .profile-forks, .profile-comments, .profile-likes { display: inline-block; margin-left: 10px; padding-left: 20px; }
+.profile-watchers { background: url('../../imgs/ico-watchers.png') no-repeat; }
+.profile-forks { background: url('../../imgs/ico-forks.png') no-repeat; }
+.profile-comments { background: url('../../imgs/ico-comments.png') no-repeat; }
+.profile-likes { background: url('../../imgs/ico-likes.png') no-repeat; }
 
 
 //Twitter Profile
