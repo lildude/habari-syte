@@ -19,7 +19,8 @@ function setupGithub(url, el) {
      var spinner = new Spinner(spin_opts).spin();
      $('#github-link').append(spinner.el);
 
-     require(["json!/github/" + username, "text!templates/github-profile-view.html"],
+	 // TODO: Need to dynamically determine this
+     require(["json!/~col/habari/github/" + username, "text!templates/github-profile-view.html"],
         function(github_data, github_view) {
             if (github_data.error || github_data.length == 0) {
                 window.location = href;

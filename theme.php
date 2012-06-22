@@ -284,11 +284,13 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_github( $form, $block )
 	{
+		Utils::debug($block->id);
 		$form->append( 'text', 'url', $block, _t( 'GitHub URL' ) );
-		$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
-		$form->append( 'text', 'github_client_id', $block, _t( 'GitHub Client ID', 'syte' ) );
-		// TODO: I think these should be hardcoded and specific to this plugin
-		$form->append( 'text', 'github_client_secret', $block, _t( 'GitHub Client Secret', 'syte' ) );
+		$form->append( 'text', 'github_username', $block, _t( 'GitHub Username' ) );
+		if ( $block->github_access_token == '' ) {
+			$form->append( 'static', 'null', _t( 'Please run the following in a terminal' ) );
+		}
+			$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
 	}
 	
 	/**
@@ -323,6 +325,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_block_form_syte_instagram( $form, $block )
 	{
+		$form->append( 'text', 'url', $block, _t( 'Instagram URL', 'syte' ) );
 		$form->append( 'text', 'instagram_access_token', $block, _t( 'Instagram Access Token', 'syte' ) );
 		$form->append( 'text', 'instagram_user_id', $block, _t( 'Instagram User ID', 'syte' ) );
 		// TODO: I think these should be hardcoded and specific to this plugin
