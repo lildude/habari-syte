@@ -10,8 +10,8 @@ function setupInstagram(el) {
   var spinner = new Spinner(spin_opts).spin();
   $('#instagram-link').append(spinner.el);
 
-// TODO: Need to dynamically determine this
-  require(["json!/~col/habari/instagram/",
+  // site_path is defined in theme.php
+  require(["json!"+site_path+"/instagram/",
           "text!templates/instagram-view.html",
           "text!templates/instagram-view-more.html"],
      function(instagram_data, instagram_view, instagram_view_more) {
@@ -44,8 +44,8 @@ function setupInstagram(el) {
           var spinner = new Spinner(spin_opts).spin();
           $('#load-more-pics').append(spinner.el);
 
-		  // TODO: Need to dynamically determine this
-          $.getJSON('/~col/habari/instagram/' + next, function(data) {
+		  // site_path is defined in theme.php
+          $.getJSON(site_path+'/instagram/' + next, function(data) {
 
             $.each(data.media, function(i, p) {
                p.formated_date = moment.unix(parseInt(p.created_time)).fromNow();

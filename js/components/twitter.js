@@ -19,8 +19,8 @@ function setupTwitter(url, el) {
      var spinner = new Spinner(spin_opts).spin();
      $('#twitter-link').append(spinner.el);
 
-	 // TODO: Need to dynamically determine this
-     require(["json!/~col/habari/twitter/" + username, "text!templates/twitter-view.html"], 
+	 // site_path is defined in theme.php
+     require(["json!"+site_path+"/twitter/" + username, "text!templates/twitter-view.html"], 
         function(twitter_data, twitter_view) {
             if (twitter_data.error || twitter_data.length == 0) {
                 window.location = href;

@@ -173,7 +173,7 @@ class SyteTheme extends Theme
 		Stack::add( 'template_footer_javascript', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 		
 		// Now for some magic.  Lets generate the intergration variables and load the necessary scripts in one go
-		$int_var_str = 'var ';
+		$int_var_str = 'var site_path = "' . Site::get_url( 'habari' ) .'",'."\n";
 		foreach( $theme_opts as $option => $val ) {
 			if ( preg_match('/^enable_(.+)$/', $option, $matches ) ) {
 				$int_var_str .= $matches[1] . '_integration_enabled = ';
