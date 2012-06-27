@@ -31,7 +31,7 @@ function setupTwitter(url, el) {
 
             var tweets = [];
             $.each(twitter_data, function(i, t) {
-              if (i > 4)		// TODO: Can we make this configurable?
+              if (i > 14)		// TODO: Can we make this configurable?
                 return;
 
               //'ddd MMM DD HH:mm:ss ZZ YYYY'
