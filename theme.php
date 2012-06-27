@@ -51,13 +51,14 @@ class SyteTheme extends Theme
 		$fs = $ui->append( 'fieldset', 'fs_mode', '' );
 			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
-		$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
+		/* 
+		 	$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_tumblr', __CLASS__ . '__enable_tumblr', _t( 'Enable Tumblr', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_dribbble', __CLASS__ . '__enable_dribbble', _t( 'Enable dribbble', 'syte' ) );
 			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram', 'syte' ) );
-
+			*/
 		$fs = $ui->append( 'fieldset', 'fs_other_config', _t( 'Other Settings', 'syte' ) );
 			/*$fs->append( 'text', 'syte_title', __CLASS__ . '__syte_title', _t( 'Syte Title:', 'syte' ) );
 			$fs->syte_title->helptext = _t( 'If this is left blank, the site-wide title set under Options will be used.' );
@@ -65,7 +66,11 @@ class SyteTheme extends Theme
 			$fs->syte_tagline->helptext = _t( 'If this is left blank, the site-wide tagline set under Options will be used.' );*/
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
-			$fs->append( 'text', 'syte_color', __CLASS__ . '__syte_color', _t( 'Primary Color', 'syte' ) );
+			$fs->append( 'text', 'pri_color', __CLASS__ . '__pri_color', _t( 'Primary Color', 'syte' ) );
+			$fs->append( 'text', 'txt_color', __CLASS__ . '__txt_color', _t( 'Text Color', 'syte' ) );
+			$fs->append( 'text', 'alt_color', __CLASS__ . '__alt_color', _t( 'Alternate Color', 'syte' ) );
+			$fs->append( 'text', 'lnk_color', __CLASS__ . '__lnk_color', _t( 'Link Color', 'syte' ) );
+			
 		
 		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
@@ -81,34 +86,12 @@ class SyteTheme extends Theme
 	{
 		// Save our config
 		$ui->save();
-
-		// Get the current blocks list
-		$blocks = $this->get_blocks( 'sidebar', 0, $this );
-		// I think we need a has() function for blocks to make this easier.
-		// Parse the blocks and grab just the types into an array
-		$blocks_types = array();
-		foreach( $blocks as $block ) {
-			$block_types[] = $block->type;
-		}
-
-		// Check if we have the requested block enabled or not. If not, enable it.
-		// TODO: Do we want to remove the block if the config form has the field unchecked?
-		foreach( $ui->controls['fs_enable']->controls as $component ) {
-			$comp_name = explode( '_', $component->name );
-			$block_name = $comp_name[1];
-			if ( $component->value === true && !in_array( 'syte_' . $block_name, $block_types ) ) {
-				$block = new Block( array(
-					'title' => ucfirst( $block_name ),
-					'type' => 'syte_' . $block_name,
-				) );
-			
-				$block->add_to_area( 'sidebar' );
-				Session::notice( _t( 'Added ' . ucfirst( $block_name ) . ' block to sidebar area.' ) );
-			}
-		}
 		
-		// Force a full refresh to show our new blocks.
-		Utils::redirect();
+		// TODO: Need to find a better method of doing this.  Maybe we can only use a cache file if in dev mode, else we do the compiling outselves.
+		// Write the variables file to cache - we could write this to the theme dir, but we can't guarantee it'll be writeable.
+		// Grab the theme options
+		$theme_opts = Options::get_group( __CLASS__ );
+		Utils::debug($theme_opts);
 	}
 	
 	/**
@@ -116,13 +99,6 @@ class SyteTheme extends Theme
 	 */
 	public function add_template_vars()
 	{
-		$this->add_template( 'block.syte_twitter', dirname( __FILE__ ) . '/blocks/block.twitter.php' );
-		$this->add_template( 'block.syte_tumbler', dirname( __FILE__ ) . '/blocks/block.tumbler.php' );
-		$this->add_template( 'block.syte_github', dirname( __FILE__ ) . '/blocks/block.github.php' );
-		$this->add_template( 'block.syte_dribbble', dirname( __FILE__ ) . '/blocks/block.dribbble.php' );
-		$this->add_template( 'block.syte_instagram', dirname( __FILE__ ) . '/blocks/block.instagram.php' );
-		
-		
 		// i18n
 		$this->load_text_domain( 'syte' );
 		
@@ -144,7 +120,7 @@ class SyteTheme extends Theme
 		$theme_opts = Options::get_group( __CLASS__ );
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
-			// TODO: Need to change the "rel"
+			// TODO: Need to change the "rel" - at the moment this is hard-coded into the header
 			//Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
 			//<link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/styles.less">
 			Stack::add( 'template_header_javascript', Site::get_url( 'theme' ) . '/css/less/less-1.1.5.min.js', 'less' );
@@ -172,9 +148,11 @@ class SyteTheme extends Theme
 		// Add other javascript support files
 		Stack::add( 'template_footer_javascript', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 		
-		// Now for some magic.  Lets generate the intergration variables and load the necessary scripts in one go
+		// Now for some magic.  Lets generate the intergration related variables and load the necessary scripts in one go
 		$int_var_str = 'var site_path = "' . Site::get_url( 'habari' ) .'",'."\n";
-		foreach( $theme_opts as $option => $val ) {
+		
+		$plugin_opts = Options::get_group( 'Syte' );
+		foreach( $plugin_opts as $option => $val ) {
 			if ( preg_match('/^enable_(.+)$/', $option, $matches ) ) {
 				$int_var_str .= $matches[1] . '_integration_enabled = ';
 				if ( $val == 1 ) {
@@ -186,6 +164,7 @@ class SyteTheme extends Theme
 			}
 		}
 		
+		// Add the integration variables to the stack.
 		Stack::add( 'template_footer_javascript', '
 			/*<![CDATA[*/
 			' . rtrim( $int_var_str, ',' ) .';
@@ -223,123 +202,6 @@ class SyteTheme extends Theme
 		return '<ul class="tags">' . $out . '</ul>';
 	}
 	
-	/**
-	 * Add the blocks to the list of selectable blocks
-	 */
-	public function filter_block_list( $block_list )
-	{
-		$block_list[ 'syte_tumblr' ] = _t( 'Syte - Tumblr Integration', 'syte' );
-		$block_list[ 'syte_twitter' ] = _t( 'Syte - Twitter Integration', 'syte' );
-		$block_list[ 'syte_github' ] = _t( 'Syte - Github Integration', 'syte' );
-		$block_list[ 'syte_dribbble' ] = _t( 'Syte - dribbble Integration', 'syte' );
-		$block_list[ 'syte_instagram' ] = _t( 'Syte - Instagram Integration', 'syte' );
-		
-		return $block_list;
-	}
-	
-	/**
-	 * Configure the tumblr block
-	 */
-	public function action_block_form_syte_tumblr( $form, $block )
-	{
-		
-		$form->append( 'text', 'tumbler_blog_url', $block, _t( 'Tumbler Blog URL', 'syte' ) );
-		$form->append( 'text', 'tumbler_api_key', $block, _t( 'Tumbler API Key', 'syte' ) );
-	}
-	
-	/**
-	 * Populate the tumblr block with some content
-	 **/
-	public function action_block_content_syte_tumblr( $block, $theme )
-	{
-		
-	}
-	
-	/**
-	 * Configure the twitter block
-	 * 
-	 * @todo: Implement Twitter authentication as used by the Twitter plugin. For the moment everything is hard coded.
-	 */
-	public function action_block_form_syte_twitter( $form, $block )
-	{
-		$form->append( 'text', 'url', $block, _t( 'Twitter URL', 'syte' ) );
-		$form->append( 'text', 'twitter_consumer_key', $block, _t( 'Twitter Consumer Key', 'syte' ) );
-		$form->append( 'text', 'twitter_consumer_secret', $block, _t( 'Twitter Consumer Secret', 'syte' ) );
-		$form->append( 'text', 'twitter_user_key', $block, _t( 'Twitter User Key', 'syte' ) );
-		$form->append( 'text', 'twitter_user_secret', $block, _t( 'Twitter User Secret', 'syte' ) );
-	}
-	
-	/**
-	 * Populate the twitter block with some content
-	 **/
-	public function action_block_content_syte_twitter( $block, $theme )
-	{
-	
-	}
-	
-	/**
-	 * Configure the github block
-	 * 
-	 * @todo: See if we can obtain this information like we can with Twitter
-	 */
-	public function action_block_form_syte_github( $form, $block )
-	{
-		Utils::debug($block->id);
-		$form->append( 'text', 'url', $block, _t( 'GitHub URL' ) );
-		$form->append( 'text', 'github_username', $block, _t( 'GitHub Username' ) );
-		if ( $block->github_access_token == '' ) {
-			$form->append( 'static', 'null', _t( 'Please run the following in a terminal' ) );
-		}
-			$form->append( 'text', 'github_access_token', $block, _t( 'GitHub Access Token', 'syte' ) );
-	}
-	
-	/**
-	 * Populate the github block with some content
-	 **/
-	public function action_block_content_syte_github( $block, $theme )
-	{
-
-	}
-	
-	/**
-	 * Configure the dribbble block
-	 * 
-	 */
-	public function action_block_form_syte_dribbble( $form, $block )
-	{
-
-	}
-	
-	/**
-	 * Populate the dribbble block with some content
-	 **/
-	public function action_block_content_syte_dribbble( $block, $theme )
-	{
-		
-	}
-	
-	/**
-	 * Configure the instagram block
-	 * 
-	 * @todo: See if we can obtain this information like we can with Twitter
-	 */
-	public function action_block_form_syte_instagram( $form, $block )
-	{
-		$form->append( 'text', 'url', $block, _t( 'Instagram URL', 'syte' ) );
-		$form->append( 'text', 'instagram_access_token', $block, _t( 'Instagram Access Token', 'syte' ) );
-		$form->append( 'text', 'instagram_user_id', $block, _t( 'Instagram User ID', 'syte' ) );
-		// TODO: I think these should be hardcoded and specific to this plugin
-		$form->append( 'text', 'instagram_client_id', $block, _t( 'Instagram Client ID', 'syte' ) );
-		$form->append( 'text', 'instagram_client_secret', $block, _t( 'Instagram Client Secret', 'syte' ) );
-	}
-	
-	/**
-	 * Populate the instagram block with some content
-	 **/
-	public function action_block_content_syte_instagram( $block, $theme )
-	{
-		
-	}
 	
 	
 	
