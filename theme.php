@@ -170,6 +170,12 @@ class SyteTheme extends Theme
 
 			', 'extra_js', 'integration_vars' );
 		
+		// Custom formui elements
+		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
+		$this->add_template( 'my_text', dirname( __FILE__ ) . '/formcontrols/text.php' );
+		$this->add_template( 'my_textarea', dirname( __FILE__ ) . '/formcontrols/textarea.php' );
+		$this->add_template( 'my_submit', dirname( __FILE__ ) . '/formcontrols/submit.php' );
+		
 	}
 	
 	/**
@@ -187,7 +193,40 @@ class SyteTheme extends Theme
 	}
 	
 	
-	
+	/**
+	 * Customise the FormUI based comment form to suit my needs
+	 */
+	public function action_form_comment( $form )
+	{
+		$form->set_option( 'template', 'my_form' );
+		$form->name = 'comment-form';
+		$form->cf_commenter->caption = _t( 'Name' );
+		if ( Options::get( 'comments_require_id' ) == 1 ) {
+			$form->cf_commenter->required = true;
+		}
+		$form->cf_commenter->template = 'my_text';
+		$form->cf_commenter->title = 'Enter your name';
+		$form->cf_commenter->placeholder = 'Your Name';
+		$form->cf_email->caption = _t( 'Email' );
+		if ( Options::get( 'comments_require_id' ) == 1 ) {
+			$form->cf_email->required = true;
+		}
+		$form->cf_email->template = 'my_text';
+		$form->cf_email->type = 'email';
+		$form->cf_email->title = 'Enter your email address';
+		$form->cf_email->placeholder = 'your@email.com';
+		//$form->cf_url->caption = _t( 'Website' );
+		$form->cf_url->template = 'my_text';
+		$form->cf_url->type = 'url';
+        $form->cf_url->title = 'Enter your URL starting with http://';
+		$form->cf_url->placeholder = 'http://yourwebsite.com';
+		//$form->cf_content->caption = '';
+		$form->cf_content->template = 'my_textarea';
+		$form->cf_content->required = true;
+		$form->cf_submit->caption = _t( 'Post' );
+		$form->cf_submit->template = 'my_submit';
+		//Utils::debug($form);
+	}
 	
 	
 	
