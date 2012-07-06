@@ -13,4 +13,7 @@
 			<description><![CDATA[Sidebar area]]></description>
 		</area>
 	</areas>
+	<requires>
+		<feature>Syte Plugin</feature>
+	</requires>
 </pluggable>
