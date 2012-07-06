@@ -43,22 +43,18 @@ class SyteTheme extends Theme
 
 	/**
 	 * Present a configuration form for the theme. 
-	 * 
-	 * @todo Implement decent looking FormControl elements
 	 */
 	public function action_theme_ui( $theme )
-	{
-		$this->add_template( 'syte_text', dirname( __FILE__ ) . '/formcontrols/text.php' );
-		
+	{	
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$fs = $ui->append( 'fieldset', 'fs_mode', '' );
 			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
-			$fs->append( 'text', 'pri_color', __CLASS__ . '__adjacent-color', _t( 'Primary Color', 'syte' ) );
-			$fs->append( 'text', 'txt_color', __CLASS__ . '__text-color', _t( 'Text Color', 'syte' ) );
-			$fs->append( 'text', 'alt_color', __CLASS__ . '__alternate-text-color', _t( 'Alternate Text Color', 'syte' ) );
-			$fs->append( 'text', 'lnk_color', __CLASS__ . '__link-color', _t( 'Link Color', 'syte' ) );
+			$fs->append( 'text', 'pri_color', __CLASS__ . '__adjacent-color', _t( 'Primary Color', 'syte' ), 'syte_text' );
+			$fs->append( 'text', 'txt_color', __CLASS__ . '__text-color', _t( 'Text Color', 'syte' ), 'syte_text' );
+			$fs->append( 'text', 'alt_color', __CLASS__ . '__alternate-text-color', _t( 'Alternate Text Color', 'syte' ), 'syte_text' );
+			$fs->append( 'text', 'lnk_color', __CLASS__ . '__link-color', _t( 'Link Color', 'syte' ), 'syte_text' );
 			
 		
 		
