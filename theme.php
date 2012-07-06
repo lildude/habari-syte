@@ -51,6 +51,7 @@ class SyteTheme extends Theme
 			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
+			$fs->append( 'static', 'desc', '<p>' . _t( 'Adjust the colors used on your implementation of this theme. Specify the value using valid HEX, RGB or RGBa values, eg "#AA0000" or "rgb(255,0,0)" or "rgba(0,255,0,0.5)". Leaving a field blank to use the theme\'s default.', 'syte' ). '<br><br></p>' );
 			$fs->append( 'text', 'pri_color', __CLASS__ . '__adjacent-color', _t( 'Primary Color', 'syte' ), 'syte_text' );
 			$fs->append( 'text', 'txt_color', __CLASS__ . '__text-color', _t( 'Text Color', 'syte' ), 'syte_text' );
 			$fs->append( 'text', 'alt_color', __CLASS__ . '__alternate-text-color', _t( 'Alternate Text Color', 'syte' ), 'syte_text' );
