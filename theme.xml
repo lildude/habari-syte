@@ -7,7 +7,10 @@
 	<copyright>2012</copyright>
 	<version>0.1</version>
 	<template_engine>rawphpengine</template_engine>
-	<description>This is a Habari specific implementation of <a href="http://rigoneri.github.com/syte/" target="_blank">Syte</a> by <a href="http://rigoneri.com/" target="_blank">Rodrigo Neri</a>.</description>
+	<description><![CDATA[
+	<p>This is a Habari specific implementation of <a href="http://rigoneri.github.com/syte/" target="_blank">Syte</a> by <a href="http://rigoneri.com/" target="_blank">Rodrigo Neri</a>.</p>
+	<p>This theme works in conjunction with the functionality provided by Habari and requires the Syte Plugin to work correctly.</p>]]>
+	</description>
 	<areas>
 		<area name="sidebar">
 			<description><![CDATA[Sidebar area]]></description>
