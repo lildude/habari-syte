@@ -20,6 +20,10 @@ $theme->display( 'header' ); ?>
 			<?php echo $post->tags_out; ?>
 		</footer>
 		<?php endif; ?>
+		<section id="comments">
+			<a href="<?php echo $post->permalink; ?>#comments"><h4><?php echo $post->comments->moderated->count . _n( ' Comment', ' Comments', $post->comments->moderated->count ); ?></h4></a>
+			<?php if ( $request->display_entry ) $theme->display( 'comments' ); ?>
+		</section>
 	</article>
 	<?php endforeach; ?>
 </section>	
