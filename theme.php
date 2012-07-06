@@ -207,24 +207,36 @@ class SyteTheme extends Theme
 		$form->cf_commenter->template = 'my_text';
 		$form->cf_commenter->title = 'Enter your name';
 		$form->cf_commenter->placeholder = 'Your Name';
+		if ( User::identify()->loggedin ) {
+			$form->cf_commenter->type = 'hidden';
+		}
 		$form->cf_email->caption = _t( 'Email' );
 		if ( Options::get( 'comments_require_id' ) == 1 ) {
 			$form->cf_email->required = true;
 		}
 		$form->cf_email->template = 'my_text';
-		$form->cf_email->type = 'email';
+		if ( User::identify()->loggedin ) {
+			$form->cf_email->type = 'hidden';
+		} else {
+			$form->cf_email->type = 'email';
+		}
 		$form->cf_email->title = 'Enter your email address';
 		$form->cf_email->placeholder = 'your@email.com';
-		//$form->cf_url->caption = _t( 'Website' );
 		$form->cf_url->template = 'my_text';
-		$form->cf_url->type = 'url';
+		if ( User::identify()->loggedin ) {
+			$form->cf_url->type = 'hidden';
+		} else {
+			$form->cf_url->type = 'url';
+		}
         $form->cf_url->title = 'Enter your URL starting with http://';
 		$form->cf_url->placeholder = 'http://yourwebsite.com';
 		//$form->cf_content->caption = '';
 		$form->cf_content->template = 'my_textarea';
 		$form->cf_content->required = true;
-		$form->cf_submit->caption = _t( 'Post' );
+		$form->cf_content->rows = 10;
+		$form->cf_submit->caption = _t( 'Post Comment' );
 		$form->cf_submit->template = 'my_submit';
+		$form->cf_submit->class = 'btn';
 		//Utils::debug($form);
 	}
 	
