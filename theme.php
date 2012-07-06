@@ -20,7 +20,8 @@ class SyteTheme extends Theme
 	 */
 	public function action_theme_activation( )
 	{
-		
+		// Write the custom colors and other options to the user/cache/variables.less file
+		self::save_less_vars();
 	}
 
 	/**
@@ -47,29 +48,17 @@ class SyteTheme extends Theme
 	 */
 	public function action_theme_ui( $theme )
 	{
+		$this->add_template( 'syte_text', dirname( __FILE__ ) . '/formcontrols/text.php' );
+		
 		$ui = new FormUI( strtolower( __CLASS__ ) );
 		$fs = $ui->append( 'fieldset', 'fs_mode', '' );
 			$fs->append( 'checkbox', 'dev_mode', __CLASS__ . '__dev_mode', _t( 'Development Deployment Mode:', 'syte' ) );
 
-		/* 
-		 	$fs = $ui->append( 'fieldset', 'fs_enable', _t( 'Integration', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_tumblr', __CLASS__ . '__enable_tumblr', _t( 'Enable Tumblr', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_twitter', __CLASS__ . '__enable_twitter', _t( 'Enable Twitter', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_github', __CLASS__ . '__enable_github', _t( 'Enable GitHub', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_dribbble', __CLASS__ . '__enable_dribbble', _t( 'Enable dribbble', 'syte' ) );
-			$fs->append( 'checkbox', 'enable_instagram', __CLASS__ . '__enable_instagram', _t( 'Enable Instagram', 'syte' ) );
-			*/
-		$fs = $ui->append( 'fieldset', 'fs_other_config', _t( 'Other Settings', 'syte' ) );
-			/*$fs->append( 'text', 'syte_title', __CLASS__ . '__syte_title', _t( 'Syte Title:', 'syte' ) );
-			$fs->syte_title->helptext = _t( 'If this is left blank, the site-wide title set under Options will be used.' );
-			$fs->append( 'text', 'syte_tagline', __CLASS__ . '__syte_tagline', _t( 'Syte Tagline:', 'syte' ) );
-			$fs->syte_tagline->helptext = _t( 'If this is left blank, the site-wide tagline set under Options will be used.' );*/
-
 		$fs = $ui->append( 'fieldset', 'fs_appearance', _t( 'Appearance Settings', 'syte' ) );
-			$fs->append( 'text', 'pri_color', __CLASS__ . '__pri_color', _t( 'Primary Color', 'syte' ) );
-			$fs->append( 'text', 'txt_color', __CLASS__ . '__txt_color', _t( 'Text Color', 'syte' ) );
-			$fs->append( 'text', 'alt_color', __CLASS__ . '__alt_color', _t( 'Alternate Color', 'syte' ) );
-			$fs->append( 'text', 'lnk_color', __CLASS__ . '__lnk_color', _t( 'Link Color', 'syte' ) );
+			$fs->append( 'text', 'pri_color', __CLASS__ . '__adjacent-color', _t( 'Primary Color', 'syte' ) );
+			$fs->append( 'text', 'txt_color', __CLASS__ . '__text-color', _t( 'Text Color', 'syte' ) );
+			$fs->append( 'text', 'alt_color', __CLASS__ . '__alternate-text-color', _t( 'Alternate Text Color', 'syte' ) );
+			$fs->append( 'text', 'lnk_color', __CLASS__ . '__link-color', _t( 'Link Color', 'syte' ) );
 			
 		
 		
@@ -87,11 +76,8 @@ class SyteTheme extends Theme
 		// Save our config
 		$ui->save();
 		
-		// TODO: Need to find a better method of doing this.  Maybe we can only use a cache file if in dev mode, else we do the compiling outselves.
-		// Write the variables file to cache - we could write this to the theme dir, but we can't guarantee it'll be writeable.
-		// Grab the theme options
-		$theme_opts = Options::get_group( __CLASS__ );
-		Utils::debug($theme_opts);
+		// Write the custom colors to the user/cache/variables.less file
+		self::save_less_vars();
 	}
 	
 	/**
@@ -118,6 +104,7 @@ class SyteTheme extends Theme
 		}
 		
 		$theme_opts = Options::get_group( __CLASS__ );
+		//Utils::debug($theme_opts);
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
 			// TODO: Need to change the "rel" - at the moment this is hard-coded into the header
@@ -212,6 +199,50 @@ class SyteTheme extends Theme
 	 * that as I develop the theme.
 	 */
 	
-		 
+	/**
+	 * Function that saves the theme configured colors to a file in the cache directory.
+	 * We do this because we can't guarantee the theme's directory will be writeable 
+	 * by the web server.
+	 * 
+	 * @todo: Need to find a better way of doing this.  This is the only way I can
+	 * find to have LESS implement our theme configured colors without actually
+	 * manually modifying the variables.less file directly.
+	 * 
+	 * @todo: Implement lessphp to automatically "compile" for non-dev mode.
+	 */
+	public static function save_less_vars()
+	{
+		if ( !defined( 'FILE_CACHE_LOCATION' ) ) {
+			define( 'FILE_CACHE_LOCATION', HABARI_PATH . '/user/cache/' );
+		}
+		
+		$file = FILE_CACHE_LOCATION . '/variables.less';
+		
+		// Get the theme options
+		$opts = Options::get_group( __CLASS__ );
+		
+		// Pull out just the *-color keys
+		foreach ( array_keys( $opts ) as $key ) {
+			if ( !preg_match('/.+-color$/', $key ) ) {
+				unset( $opts[$key] );
+			}
+		}
+
+		$str = "// variables used by the Syte theme in dev mode.\n";
+		foreach( $opts as $key => $value ) {
+			if ( $value != '' ) {
+				$str .= "@{$key}: {$value};\n";
+			}
+		}
+		
+		// Add the portrait URL from the Admin user's profile
+		$user = User::get_by_name( 'admin' );
+		if ( $user->info->imageurl != '' ) {
+			$str .= '@pic_url: "'.$user->info->imageurl.'";';
+		}
+		
+		// Write the data to file
+		file_put_contents( $file, $str );
+	}
 }
 ?>
