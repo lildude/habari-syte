@@ -1,6 +1,9 @@
 @import 'reset.less';
 @import 'mixins.less';
 
+@import 'variables.less';
+
+// Habari configured variables to over-ride those set above - saved to cache dir.
 @import '../../../../cache/variables.less';
 
 @import 'base.less';
@@ -30,7 +33,8 @@
       .square(84px);
       margin: 60px 35px 20px 35px;
       border: 3px solid @adjacent-color;
-      background: #00000 url('../../imgs/pic.png');
+	  background-color: #000000;
+      .picture_url(@pic_url);
 
       @pic-shadow:0 1px 1px #f9f9f9, inset 0 0 6px #000000;
       .box-shadow(@pic-shadow);

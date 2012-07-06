@@ -4,3 +4,12 @@
 @text-color: #404040;
 @alternate-text-color: #4b4b4b;
 @link-color: #000000;
+
+@pic_url: "";
+
+// Mixins
+.picture_url(@pic_url) {
+	background-image:~"url('@{pic_url}')"; // [1]
+}
+
+// [1] less.js bugs: https://github.com/cloudhead/less.js/issues/409 & https://github.com/cloudhead/less.js/issues/294
