@@ -19,7 +19,8 @@ function setupDribbble(url, el) {
      var spinner = new Spinner(spin_opts).spin();
      $('#dribbble-link').append(spinner.el);
 
-     require(["json!/dribbble/" + username, "text!templates/dribbble-view.html"],
+	 // site_path is defined in theme.php
+     require(["json!"+site_path+"/dribbble/" + username, "text!templates/dribbble-view.html"],
         function(dribbble_data, dribbble_view) {
             if (dribbble_data.message || dribbble_data.length == 0) {
                 window.location = href;
