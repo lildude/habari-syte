@@ -6,6 +6,34 @@ function setupLastfm(url, el) {
     return;
   }
 
+  /* New code here */
+  // Start the spinner
+  var params = url.attr('path').split('/').filter(function(w) {
+      if (w.length)
+          return true;
+      return false;
+  })
+
+  if (params.length == 2) {
+     var username = params[1];
+	 
+	 var spinner = new Spinner(spin_opts).spin();
+	 $('#lastfm-link').append(spinner.el);
+	 
+	var href = site_path+"/lastfm/" + username
+	$.get(href, function(data) {
+		$(data).modal().on('hidden', function () {
+			$(this).remove();	// TODO: we should probably hide to keep things fast - need to get this working
+			adjustSelection('home-link');
+		});
+	}).success(function() { 
+		spinner.stop();
+	});
+	return;
+  }
+ 
+ /* Old code here */
+ /*
   var params = url.attr('path').split('/').filter(function(w) {
       if (w.length)
           return true;
@@ -21,7 +49,7 @@ function setupLastfm(url, el) {
     /* Add extra helper to parse out the #text fields in context passed to
      * handlebars.  The '#' character is reserved by the handlebars templating
      * language itself so cannot reference '#text' easily in the template. */
-     Handlebars.registerHelper('text', function(obj) {
+    /* Handlebars.registerHelper('text', function(obj) {
         try {
           return obj['#text'];
         } catch (err) {
@@ -63,9 +91,9 @@ function setupLastfm(url, el) {
             spinner.stop();
 
         });
-
+	
      return;
-  }
+  } */
 
   window.location = href;
 }
