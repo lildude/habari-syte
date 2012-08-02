@@ -6,8 +6,6 @@ function setupLastfm(url, el) {
 		return;
 	}
 
-	/* New code here */
-	// Start the spinner
 	var params = url.attr('path').split('/').filter(function(w) {
 		if (w.length)
 			return true;
