@@ -128,36 +128,19 @@ class SyteTheme extends Theme
 		
 		// Add other javascript support files
 		Stack::add( 'template_footer_javascript', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
-		
-		// Now for some magic.  Lets generate the intergration related variables and load the necessary scripts in one go
-		$int_var_str = 'var site_path = "' . Site::get_url( 'habari' ) .'",'."\n";
-		
-		$plugin_opts = Options::get_group( 'Syte' );
-		foreach( $plugin_opts as $option => $val ) {
-			if ( preg_match('/^enable_(.+)$/', $option, $matches ) ) {
-				$int_var_str .= $matches[1] . '_integration_enabled = ';
-				if ( $val == 1 ) {
-					$int_var_str .= 'true,';
-					Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/' . $matches[1] . '.js', $matches[1] . '_integration_js', 'intergration_vars' );
-				} else {
-					$int_var_str .= 'false,';
-				}
-			}
-		}
-		
+			
 		// Add the integration variables to the stack.
+		
 		Stack::add( 'template_footer_javascript', '
 			/*<![CDATA[*/
-			' . rtrim( $int_var_str, ',' ) .';
+			var site_path = "' . Site::get_url( 'habari' ) .'";
 			/*]]>*/
-			', 'integration_vars', 'jquery' );
-		
-		Stack::add( 'template_footer_javascript', '
+				
 			$(function() {
 				fetchBlogPosts();
 			});
 
-			', 'extra_js', 'integration_vars' );
+			', 'extra_js', 'blog-posts' );
 		
 		// Custom formui elements
 		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
