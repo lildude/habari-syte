@@ -135,12 +135,10 @@ class SyteTheme extends Theme
 			/*<![CDATA[*/
 			var site_path = "' . Site::get_url( 'habari' ) .'";
 			/*]]>*/
-				
 			$(function() {
 				fetchBlogPosts();
 			});
-
-			', 'extra_js', 'blog-posts' );
+			', 'extra_js' );
 		
 		// Custom formui elements
 		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
