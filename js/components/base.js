@@ -1,19 +1,5 @@
 //Global configs and functions shared between js
 
-function numberWithCommas(x) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-
-require.config({
-  //baseUrl: "/static/",
-  baseUrl: "user/themes/syte/",
-  paths: {
-    "text": "js/libs/text",
-    "json": "js/libs/json"
-  },
-  waitSeconds: 15
-});
-
 var spin_opts = {
   lines: 9,
   length: 5,

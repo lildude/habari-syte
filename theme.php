@@ -101,7 +101,7 @@ class SyteTheme extends Theme
 		}
 		
 		$theme_opts = Options::get_group( __CLASS__ );
-		//Utils::debug($theme_opts);
+
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
 			// TODO: Need to change the "rel" - at the moment this is hard-coded into the header
@@ -111,12 +111,9 @@ class SyteTheme extends Theme
 			
 			// Load the dev libs.  Not sure if they all require jquery at the moment
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );	// Seems to be url parser
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/require.js', 'require', 'jquery' );			// JS library loader
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/handlebars.js', 'handlebars', 'jquery' );	// Templating - remove 
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/moment.min.js', 'moment', 'jquery' );		// date parsing library
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/bootstrap-modal.js', 'bootstrap', 'jquery' );// Modal library - def need this
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/spin.min.js', 'spin', 'jquery' );			// jquery spinner
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/prettify.js', 'prettyfy', 'jquery' );		// syntax highlighter
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/prettify.js', 'prettyfy', 'jquery' );		// syntax highlighter - don't seem to use this anywhere
 			
 			
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/base.js', 'base', 'jquery' );			// doesn't actually do much
@@ -157,14 +154,6 @@ class SyteTheme extends Theme
 		
 		Stack::add( 'template_footer_javascript', '
 			$(function() {
-				/* {% if post_id %}
-					fetchBlogPosts("{{post_id}}")
-					{% elif tag_slug %}
-					fetchBlogPosts(null, "{{tag_slug}}");
-					{% else %}
-					fetchBlogPosts();
-					{% endif %}
-				*/
 				fetchBlogPosts();
 			});
 
