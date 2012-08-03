@@ -1,87 +1,75 @@
 var $url;
-// TODO: Fix this.  This seems too specific to me.  This can definitely be made more generic
 function setupLinks() {
 
-  $('a').click(function(e) {
-      if (e.which == 2)
-          return;
+	$('a[data-toggle=modal]').click(function(e) {
 
-      e.preventDefault();
-      e.stopPropagation();
+		if (e.which == 2)	// Not sure why we do this
+			return;
 
-      if (this.href == $url)
-          return;
+		e.preventDefault();
+		e.stopPropagation();
 
-      var url = $.url(this.href.replace('/#!', ''));
-      $url = this.href;
+		if (this.href == $url)
+			return;
 
-      if (this.id == 'home-link' && window.location.pathname == '/') {
-         $('#github-profile').remove();
-         $('#dribbble-profile').remove();
-         $('#twitter-profile').remove();
-         $('#instagram-profile').remove();
-         $('#lastfm-profile').remove();
-         $('.modal-backdrop').remove();
-         adjustSelection('home-link');
-      }
-      else if(this.id == 'instagram-link' && instagram_integration_enabled) {
-         $('#github-profile').remove();
-         $('#dribbble-profile').remove();
-         $('#twitter-profile').remove();
-         $('#lastfm-profile').remove();
-         $('.modal-backdrop').remove();
-         adjustSelection('instagram-link');
+		var url = $.url(this.href.replace('/#!', ''));
+		$url = this.href;
+		
+		// Take the id and determine the profile etc from it
+		var module = this.id.split('-')[0];
+		
+		// If the block is already visible, take the user to the actual URL if they click it again
+		if ($('#'+module+'-profile').length > 0) {
+			window.location = this.href;
+			return;
+		}
 
-         setupInstagram(this);
-      }
-      else if (twitter_integration_enabled && (url.attr('host') == 'twitter.com' || url.attr('host') == 'www.twitter.com')) {
+		// If any other blocks still exist, remove them first
+		if ($('div[id$="-profile"]').length > 0) {
+			$('div[id$="-profile"]').remove();
+			$('.modal-backdrop').remove();
+		}
+		
+		// Determine the username from the position is occurs in the actual site's profile URL
+		var params = url.attr('path').split('/').filter(function(w) {
+			if (w.length)
+				return true;
+			return false;
+		})
 
-         $('#github-profile').remove();
-         $('#dribbble-profile').remove();
-         $('#instagram-profile').remove();
-         $('#lastfm-profile').remove();
-         $('.modal-backdrop').remove();
-         adjustSelection('twitter-link');
+		var username = '';
+		switch( params.length ) {
+			case 1:		// twitter, github, dribbble
+				username = params[0];
+				break;	
+			case 2:		// last.fm
+				username =  params[1];
+				break;
+			default:	// instagram
+				
+		}
+		
+		var href = site_path + "/" + module + "/" + username;
+		
+		var spinner = new Spinner(spin_opts).spin();
+		$('#'+this.id).append(spinner.el);
 
-         setupTwitter(url, this);
-      }
-      else if (github_integration_enabled && (url.attr('host') == 'github.com' || url.attr('host') == 'www.github.com')) {
 
-        $('#twitter-profile').remove();
-        $('#dribbble-profile').remove();
-        $('#instagram-profile').remove();
-        $('#lastfm-profile').remove();
-        $('.modal-backdrop').remove();
-        adjustSelection('github-link');
+		$.get(href, function(data) {
+			$(data).modal().on('hidden', function () {
+					$(this).remove();
+					adjustSelection('home-link');
+				});
+			}).success(function() {
+				adjustSelection(module+'-link');
+				spinner.stop();
+			});
+		return;
 
-        setupGithub(url, this);
-      }
-      else if (dribbble_integration_enabled && (url.attr('host') == 'dribbble.com' || url.attr('host') == 'www.dribbble.com')) {
+		// If you get here something unexpected happened :-)
+		window.location = href;
 
-         $('#twitter-profile').remove();
-         $('#github-profile').remove();
-         $('#instagram-profile').remove();
-         $('#lastfm-profile').remove();
-         $('.modal-backdrop').remove();
-         adjustSelection('dribbble-link');
-
-         setupDribbble(url, this);
-      }
-      else if (lastfm_integration_enabled && (url.attr('host') == 'lastfm.com' || url.attr('host') == 'www.lastfm.com' || url.attr('host') == 'www.last.fm' )) {
-
-        $('#twitter-profile').remove();
-        $('#github-profile').remove();
-        $('#dribbble-profile').remove();
-        $('#instagram-profile').remove();
-        $('.modal-backdrop').remove();
-        adjustSelection('lastfm-link');
-
-        setupLastfm(url, this);
-      }
-      else {
-         window.location = this.href;
-      }
-  });
+		});
 }
 
 function adjustSelection(el) {

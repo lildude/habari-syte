@@ -1,2 +1,2 @@
 <?php if ( !defined( 'HABARI_PATH' ) ) { die( 'No direct access' ); } ?>
-<li><a href="<?php echo $block->url; ?>" id="<?php echo strtolower( str_replace( 'syte_', '', $block->type ) ); ?>-link"><?php echo $block->title; ?></a></li>
+<li><a href="<?php echo $block->url; ?>" id="<?php echo strtolower( str_replace( 'syte_', '', $block->type ) ); ?>-link" data-toggle="modal"><?php echo $block->title; ?></a></li>
