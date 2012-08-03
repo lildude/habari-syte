@@ -1,5 +1,5 @@
 var $url;
-
+// TODO: Fix this.  This seems too specific to me.  This can definitely be made more generic
 function setupLinks() {
 
   $('a').click(function(e) {
