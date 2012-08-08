@@ -14,7 +14,11 @@
 	<link rel="shortcut icon" href="<?php Site::out_url( 'theme' ); ?>/imgs/favicon.ico" type="image/x-icon">
 <?php endif; ?>
 	<!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	
+	<?php // This should ideally be in the theme.php using Stack::add, but can't be due to the requirement for rel="stylesheet/less" 
+	if ( Options::get( 'SyteTheme__dev_mode' ) ) : ?>
 	<link rel="stylesheet/less" type="text/css" href="<?php echo Site::get_url( 'theme' ); ?>/css/less/styles.less" media="screen, projection">
+	<?php endif; ?>
 	<?php echo $theme->header(); ?>
 	
 </head>
@@ -33,5 +37,5 @@
 		<?php echo $theme->area( 'sidebar' ); ?>
     </ul>
   </nav>
-  <a href="https://github.com/rigoneri/syte" class="fork-me">Fork me on Github</a>
+  <?php /* <a href="https://github.com/rigoneri/syte" class="fork-me">Fork me on Github</a> */ ?>
 </header>

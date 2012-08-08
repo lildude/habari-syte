@@ -9,10 +9,10 @@ class SyteTheme extends Theme
 	{
 		// Apply Format::autop() to comment content...
 		Format::apply( 'autop', 'comment_content_out' );
-		// Truncate content excerpt at "more" or 56 characters...
+		// Apply Format::autop() to post excerpt content...
 		Format::apply( 'autop', 'post_content_excerpt' );
+		// Truncate content excerpt at "more" or 200 characters or the first paragraph...
 		Format::apply_with_hook_params( 'more', 'post_content_excerpt', 'Continue reading...', 200, 1 );
-		
 	}
 
 	/**
@@ -29,7 +29,6 @@ class SyteTheme extends Theme
 	 */
 	public function action_theme_deactivation() 
 	{
-		// Add deactivation actions here
 	}
 
 	/**
@@ -57,18 +56,16 @@ class SyteTheme extends Theme
 			$fs->append( 'text', 'alt_color', __CLASS__ . '__alternate-text-color', _t( 'Alternate Text Color', 'syte' ), 'syte_text' );
 			$fs->append( 'text', 'lnk_color', __CLASS__ . '__link-color', _t( 'Link Color', 'syte' ), 'syte_text' );
 			
-		
-		
 		$ui->append( 'submit', 'save', _t( 'Save' ) );
 		$ui->set_option( 'success_message', _t( 'Options saved', 'syte' ) );
-		$ui->on_success( array( $this, 'enable_integrations' ) );
+		$ui->on_success( array( $this, 'save_config' ) );
 		$ui->out();
 	}
 	
 	/**
 	 * Save the configuration form and activate the blocks requested in the configuration.
 	 */
-	public function enable_integrations( $ui )
+	public function save_config( $ui )
 	{
 		// Save our config
 		$ui->save();
@@ -104,33 +101,31 @@ class SyteTheme extends Theme
 
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
-			// TODO: Need to change the "rel" - at the moment this is hard-coded into the header
+			// TODO: At the moment this is hard-coded into the header because Habari doesn't allow setting a custom 'rel' required for this
 			//Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
-			//<link rel="stylesheet/less" type="text/css" href="{{ MEDIA_URL }}less/styles.less">
 			Stack::add( 'template_header_javascript', Site::get_url( 'theme' ) . '/css/less/less-1.1.5.min.js', 'less' );
 			
-			// Load the dev libs.  Not sure if they all require jquery at the moment
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );	// Seems to be url parser
+			// Load the dev libs we need.
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );	// url parser
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/bootstrap-modal.js', 'bootstrap', 'jquery' );// Modal library - def need this
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/spin.min.js', 'spin', 'jquery' );			// jquery spinner
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/prettify.js', 'prettyfy', 'jquery' );		// syntax highlighter - don't seem to use this anywhere
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/prettify.js', 'prettyfy', 'jquery' );		// syntax highlighter
 			
 			
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/base.js', 'base', 'jquery' );			// doesn't actually do much
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/mobile.js', 'mobile', 'jquery' );		// mobile detection
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/blog-posts.js', 'blog-posts', 'jquery' );// loads blog posts Tumblr
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/blog-posts.js', 'blog-posts', 'jquery' );// sets things up
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/links.js', 'links', 'jquery' );		// changes onclick behaviour for links
-
-		} else {
+		} 
+		else {
 			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/styles-{{ COMPRESS_REVISION_NUMBER }}.min.css', 'screen, projection' ), 'style' );
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts-{{ COMPRESS_REVISION_NUMBER }}.min.js', 'links', 'jquery' );
 		}
 		
-		// Add other javascript support files
+		// Add jquery
 		Stack::add( 'template_footer_javascript', 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 			
-		// Add the integration variables to the stack.
-		
+		// Define site_path and call "fetchBlogPosts()" to set all the Javascript up		
 		Stack::add( 'template_footer_javascript', '
 			/*<![CDATA[*/
 			var site_path = "' . Site::get_url( 'habari' ) .'";
@@ -207,20 +202,17 @@ class SyteTheme extends Theme
 		$form->cf_submit->caption = _t( 'Post Comment' );
 		$form->cf_submit->template = 'my_submit';
 		$form->cf_submit->class = 'btn';
-		//Utils::debug($form);
 	}
 	
 	
 	
-	/*********************** Helper Functions *************************************
-	 * Most of these functions should probably go into a plugin.  We'll see about
-	 * that as I develop the theme.
-	 */
-	
+	/*********************** Helper Functions *************************************/
+	 
 	/**
 	 * Function that saves the theme configured colors to a file in the cache directory.
 	 * We do this because we can't guarantee the theme's directory will be writeable 
-	 * by the web server.
+	 * by the web server and we probably don't want people playing with permissions just
+	 * to install and use a theme.
 	 * 
 	 * @todo: Need to find a better way of doing this.  This is the only way I can
 	 * find to have LESS implement our theme configured colors without actually
@@ -241,13 +233,13 @@ class SyteTheme extends Theme
 		
 		// Pull out just the *-color keys
 		foreach ( array_keys( $opts ) as $key ) {
-			if ( !preg_match('/.+-color$/', $key ) ) {
+			if ( !preg_match( '/.+-color$/', $key ) ) {
 				unset( $opts[$key] );
 			}
 		}
 
 		$str = "// variables used by the Syte theme in dev mode.\n";
-		foreach( $opts as $key => $value ) {
+		foreach ( $opts as $key => $value ) {
 			if ( $value != '' ) {
 				$str .= "@{$key}: {$value};\n";
 			}
