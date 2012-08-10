@@ -72,6 +72,9 @@ class SyteTheme extends Theme
 		
 		// Write the custom colors to the user/cache/variables.less file
 		self::save_less_vars();
+		
+		// Optimizing CSS using Google's Closure Compiler API
+		//Utils::debug(Stack::get_sorted_stack('template_footer_javascript'));
 	}
 	
 	/**
@@ -118,8 +121,8 @@ class SyteTheme extends Theme
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/links.js', 'links', 'jquery' );		// changes onclick behaviour for links
 		} 
 		else {
-			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/styles-{{ COMPRESS_REVISION_NUMBER }}.min.css', 'screen, projection' ), 'style' );
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts-{{ COMPRESS_REVISION_NUMBER }}.min.js', 'links', 'jquery' );
+			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/style.min.css', 'screen, projection' ), 'style' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts.min.js', 'links', 'jquery' );
 		}
 		
 		// Add jquery
@@ -216,7 +219,7 @@ class SyteTheme extends Theme
 	 * 
 	 * @todo: Need to find a better way of doing this.  This is the only way I can
 	 * find to have LESS implement our theme configured colors without actually
-	 * manually modifying the variables.less file directly.
+	 * manually modifying the variables.less file directly.  I think we can do this directly with phpless.
 	 * 
 	 * @todo: Implement lessphp to automatically "compile" for non-dev mode.
 	 */
@@ -232,15 +235,9 @@ class SyteTheme extends Theme
 		$opts = Options::get_group( __CLASS__ );
 		
 		// Pull out just the *-color keys
-		foreach ( array_keys( $opts ) as $key ) {
-			if ( !preg_match( '/.+-color$/', $key ) ) {
-				unset( $opts[$key] );
-			}
-		}
-
 		$str = "// variables used by the Syte theme in dev mode.\n";
 		foreach ( $opts as $key => $value ) {
-			if ( $value != '' ) {
+			if ( ( preg_match( '/.+-color$/', $key ) && ( $value != '' ) ) ) {
 				$str .= "@{$key}: {$value};\n";
 			}
 		}
@@ -253,6 +250,27 @@ class SyteTheme extends Theme
 		
 		// Write the data to file
 		file_put_contents( $file, $str );
+		
+		// If we're not in dev mode, regenerate the CSS file from the less files 
+		// and minify the JS using Google's Closure API
+		if ( ! $opts['dev_mode'] ) {
+			// CSS
+			// Required your webserver has write access to the theme's css dir
+			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';
+			try {
+				$less = new lessc();
+				$less->setFormatter("compressed");
+				$less->importDir = Site::get_dir( 'theme' ) . '/css/less/';
+				file_put_contents( Site::get_dir( 'theme' ) . '/css/style.min.css', $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
+			}
+			catch ( exception $ex ) {
+				EventLog::log( $ex->getMessage(), 'err' );
+			}
+			
+			// Javascript
+			
+		}
+		
 	}
 }
 ?>
