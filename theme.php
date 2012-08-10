@@ -72,9 +72,6 @@ class SyteTheme extends Theme
 		
 		// Write the custom colors to the user/cache/variables.less file
 		self::save_less_vars();
-		
-		// Optimizing CSS using Google's Closure Compiler API
-		//Utils::debug(Stack::get_sorted_stack('template_footer_javascript'));
 	}
 	
 	/**
@@ -219,9 +216,8 @@ class SyteTheme extends Theme
 	 * 
 	 * @todo: Need to find a better way of doing this.  This is the only way I can
 	 * find to have LESS implement our theme configured colors without actually
-	 * manually modifying the variables.less file directly.  I think we can do this directly with phpless.
+	 * manually modifying the variables.less file directly.
 	 * 
-	 * @todo: Implement lessphp to automatically "compile" for non-dev mode.
 	 */
 	public static function save_less_vars()
 	{
@@ -252,20 +248,20 @@ class SyteTheme extends Theme
 		file_put_contents( $file, $str );
 		
 		// If we're not in dev mode, regenerate the CSS file from the less files.
-		// Requires that your webserver has write access to the theme's css/min dir
+		// if the syte/css/min dir is rw by the web server, save the minified css file there, else save to the cache dir
 		if ( ! $opts['dev_mode'] ) {
 			// CSS
-			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';
+			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';			
 			try {
 				$less = new lessc();
 				$less->setFormatter("compressed");
-				file_put_contents( Site::get_dir( 'theme' ) . '/css/min/style.min.css', $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
+				lessc::ccompile( Site::get_dir( 'theme' ) . '/css/less/styles.less', Site::get_dir( 'theme' ) . '/css/min/style.min.css', $less );
 			}
 			catch ( exception $ex ) {
 				EventLog::log( $ex->getMessage(), 'err' );
 			}
 			
-			// Javascript - TODO - maybe: if you're tatting with the JS files you probably know how to minimise them yourself.			
+			// Javascript - TODO (maybe): if you're tatting with the JS files you probably know how to minimise them yourself.			
 			
 		}
 		
