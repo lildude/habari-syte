@@ -248,21 +248,26 @@ class SyteTheme extends Theme
 		file_put_contents( $file, $str );
 		
 		// If we're not in dev mode, regenerate the CSS file from the less files.
-		// if the syte/css/min dir is rw by the web server, save the minified css file there, else save to the cache dir
+		// The syte/css/min/style.min.css file needs to be rw by the web server
+		$min_css = Site::get_dir( 'theme' ) . '/css/min/style.min.css';
 		if ( ! $opts['dev_mode'] ) {
-			// CSS
-			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';			
-			try {
-				$less = new lessc();
-				$less->setFormatter("compressed");
-				lessc::ccompile( Site::get_dir( 'theme' ) . '/css/less/styles.less', Site::get_dir( 'theme' ) . '/css/min/style.min.css', $less );
-			}
-			catch ( exception $ex ) {
-				EventLog::log( $ex->getMessage(), 'err' );
-			}
 			
-			// Javascript - TODO (maybe): if you're tatting with the JS files you probably know how to minimise them yourself.			
-			
+			if ( is_writable( $min_css ) ) {
+				require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';			
+				try {
+					$less = new lessc();
+					$less->setFormatter("compressed");
+					file_put_contents( $min_css, $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
+				}
+				catch ( exception $ex ) {
+					EventLog::log( $ex->getMessage(), 'err' );
+				}
+			} 
+			else {
+				Options::set( __CLASS__ . '__dev_mode', true );
+				Session::notice( $min_css . " is not writable. Reverting to Dev Mode" );
+				Utils::redirect(); // So the user sees the dev mode has been enabled.
+			}
 		}
 		
 	}
