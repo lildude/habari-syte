@@ -122,7 +122,7 @@ class SyteTheme extends Theme
 		} 
 		else {
 			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/style.min.css', 'screen, projection' ), 'style' );
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts.min.js', 'links', 'jquery' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/scripts.min.js', 'links', 'jquery' );
 		}
 		
 		// Add jquery
@@ -136,7 +136,7 @@ class SyteTheme extends Theme
 			$(function() {
 				fetchBlogPosts();
 			});
-			', 'extra_js' );
+			', 'extra_js', 'links' );
 		
 		// Custom formui elements
 		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
@@ -251,23 +251,21 @@ class SyteTheme extends Theme
 		// Write the data to file
 		file_put_contents( $file, $str );
 		
-		// If we're not in dev mode, regenerate the CSS file from the less files 
-		// and minify the JS using Google's Closure API
+		// If we're not in dev mode, regenerate the CSS file from the less files.
+		// Requires that your webserver has write access to the theme's css dir
 		if ( ! $opts['dev_mode'] ) {
 			// CSS
-			// Required your webserver has write access to the theme's css dir
 			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';
 			try {
 				$less = new lessc();
 				$less->setFormatter("compressed");
-				$less->importDir = Site::get_dir( 'theme' ) . '/css/less/';
 				file_put_contents( Site::get_dir( 'theme' ) . '/css/style.min.css', $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
 			}
 			catch ( exception $ex ) {
 				EventLog::log( $ex->getMessage(), 'err' );
 			}
 			
-			// Javascript
+			// Javascript - TODO - maybe: if you're tatting with the JS files you probably know how to minimise them yourself.			
 			
 		}
 		
