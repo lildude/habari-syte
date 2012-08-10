@@ -121,8 +121,8 @@ class SyteTheme extends Theme
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/links.js', 'links', 'jquery' );		// changes onclick behaviour for links
 		} 
 		else {
-			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/style.min.css', 'screen, projection' ), 'style' );
-			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/scripts.min.js', 'links', 'jquery' );
+			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/min/style.min.css', 'screen, projection' ), 'style' );
+			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts.min.js', 'links', 'jquery' );
 		}
 		
 		// Add jquery
@@ -252,14 +252,14 @@ class SyteTheme extends Theme
 		file_put_contents( $file, $str );
 		
 		// If we're not in dev mode, regenerate the CSS file from the less files.
-		// Requires that your webserver has write access to the theme's css dir
+		// Requires that your webserver has write access to the theme's css/min dir
 		if ( ! $opts['dev_mode'] ) {
 			// CSS
 			require Site::get_dir( 'theme' ) . '/lib/lessc.inc.php';
 			try {
 				$less = new lessc();
 				$less->setFormatter("compressed");
-				file_put_contents( Site::get_dir( 'theme' ) . '/css/style.min.css', $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
+				file_put_contents( Site::get_dir( 'theme' ) . '/css/min/style.min.css', $less->compileFile( Site::get_dir( 'theme' ) . '/css/less/styles.less' ) );
 			}
 			catch ( exception $ex ) {
 				EventLog::log( $ex->getMessage(), 'err' );
