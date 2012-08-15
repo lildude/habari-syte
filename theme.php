@@ -110,6 +110,9 @@ class SyteTheme extends Theme
 	 */
 	public function action_template_header( $theme ) 
 	{
+		// Add the HTML5 shiv for IE < 9
+		Stack::add( 'template_header_javascript', array( 'http://html5shiv.googlecode.com/svn/trunk/html5.js', null, '<!--[if lt IE 9]>%s<![endif]-->'), 'html5_shiv' );
+
 		if ( Options::get( __CLASS__ . '__dev_mode' ) ) {
 			Stack::add( 'template_header_javascript', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 			Stack::add( 'template_header_javascript', $theme->get_url( '/css/less/less-1.3.0.min.js' ), 'less' );
