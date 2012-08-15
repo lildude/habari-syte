@@ -96,15 +96,41 @@ class SyteTheme extends Theme
 		if ( $this->posts instanceof Post ) {
 			$this->posts = new Posts( array( $this->posts ) );
 		}
+				
+		// Custom formui elements
+		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
+		$this->add_template( 'my_text', dirname( __FILE__ ) . '/formcontrols/text.php' );
+		$this->add_template( 'my_textarea', dirname( __FILE__ ) . '/formcontrols/textarea.php' );
+		$this->add_template( 'my_submit', dirname( __FILE__ ) . '/formcontrols/submit.php' );
 		
+	}
+	
+	/**
+	 * Add Stylesheets to theme header
+	 */
+	public function action_template_header( $theme ) 
+	{
 		$theme_opts = Options::get_group( __CLASS__ );
 
 		// Add CSS
 		if ( $theme_opts['dev_mode'] ) {
-			// TODO: At the moment this is hard-coded into the header because Habari doesn't allow setting a custom 'rel' required for this
-			//Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/less/styles.less', 'screen, projection' ), 'style' );
-			Stack::add( 'template_header_javascript', Site::get_url( 'theme' ) . '/css/less/less-1.1.5.min.js', 'less' );
-			
+			Stack::add( 'template_header_javascript', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
+			Stack::add( 'template_header_javascript', $theme->get_url( '/css/less/less-1.1.5.min.js' ), 'less' );
+			Stack::add( 'template_stylesheet', array( $theme->get_url( '/css/less/styles.less' ), null, array( 'type'=> null, 'rel' => 'stylesheet/less' ) ), 'style' );
+		} 
+		else {
+			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/min/style.min.css', 'screen, projection' ), 'style' );
+		}
+	}
+	
+	/**
+	 * Add Javascript to footer
+	 */
+	public function action_template_footer( $theme )
+	{
+		$theme_opts = Options::get_group( __CLASS__ );
+
+		if ( $theme_opts['dev_mode'] ) {
 			// Load the dev libs we need.
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );	// url parser
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/bootstrap-modal.js', 'bootstrap', 'jquery' );// Modal library - def need this
@@ -118,7 +144,6 @@ class SyteTheme extends Theme
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/components/links.js', 'links', 'jquery' );		// changes onclick behaviour for links
 		} 
 		else {
-			Stack::add( 'template_stylesheet', array( Site::get_url( 'theme' ) . '/css/min/style.min.css', 'screen, projection' ), 'style' );
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/min/scripts.min.js', 'links', 'jquery' );
 		}
 		
@@ -134,13 +159,6 @@ class SyteTheme extends Theme
 				fetchBlogPosts();
 			});
 			', 'extra_js', 'links' );
-		
-		// Custom formui elements
-		$this->add_template( 'my_form', dirname( __FILE__ ) . '/formcontrols/form.php' );
-		$this->add_template( 'my_text', dirname( __FILE__ ) . '/formcontrols/text.php' );
-		$this->add_template( 'my_textarea', dirname( __FILE__ ) . '/formcontrols/textarea.php' );
-		$this->add_template( 'my_submit', dirname( __FILE__ ) . '/formcontrols/submit.php' );
-		
 	}
 	
 	/**
