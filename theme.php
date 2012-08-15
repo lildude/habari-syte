@@ -112,7 +112,7 @@ class SyteTheme extends Theme
 	{
 		if ( Options::get( __CLASS__ . '__dev_mode' ) ) {
 			Stack::add( 'template_header_javascript', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
-			Stack::add( 'template_header_javascript', $theme->get_url( '/css/less/less-1.1.5.min.js' ), 'less' );
+			Stack::add( 'template_header_javascript', $theme->get_url( '/css/less/less-1.3.0.min.js' ), 'less' );
 			Stack::add( 'template_stylesheet', array( $theme->get_url( '/css/less/styles.less' ), null, array( 'type'=> null, 'rel' => 'stylesheet/less' ) ), 'style' );
 		} 
 		else {
