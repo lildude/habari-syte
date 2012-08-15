@@ -110,10 +110,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_template_header( $theme ) 
 	{
-		$theme_opts = Options::get_group( __CLASS__ );
-
-		// Add CSS
-		if ( $theme_opts['dev_mode'] ) {
+		if ( Options::get( __CLASS__ . '__dev_mode' ) ) {
 			Stack::add( 'template_header_javascript', 'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js', 'jquery' );
 			Stack::add( 'template_header_javascript', $theme->get_url( '/css/less/less-1.1.5.min.js' ), 'less' );
 			Stack::add( 'template_stylesheet', array( $theme->get_url( '/css/less/styles.less' ), null, array( 'type'=> null, 'rel' => 'stylesheet/less' ) ), 'style' );
@@ -128,9 +125,7 @@ class SyteTheme extends Theme
 	 */
 	public function action_template_footer( $theme )
 	{
-		$theme_opts = Options::get_group( __CLASS__ );
-
-		if ( $theme_opts['dev_mode'] ) {
+		if ( Options::get( __CLASS__ . '__dev_mode' ) ) {
 			// Load the dev libs we need.
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/jquery.url.js', 'jquery_url', 'jquery' );	// url parser
 			Stack::add( 'template_footer_javascript', Site::get_url( 'theme' ) . '/js/libs/bootstrap-modal.js', 'bootstrap', 'jquery' );// Modal library - def need this
