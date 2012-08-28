@@ -3,8 +3,6 @@
 <head>
 	<meta charset="utf-8" />
 	<title><?php Options::out( 'title' ); ?> <?php if ( $request->display_entry && isset( $post ) ) { echo " :: {$post->title}"; } ?></title>
-	<meta name="description" content="<?php Options::out( 'about' ); ?>" />
-	<meta name="keywords" content="<?php ( $request->display_entry && isset ( $post ) && count( $post->tags ) > 0 ) ? $post->tags_out : Options::out( 'keywords' ); ?>" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php if ( User::get_by_name( 'admin' )->info->imageurl != '' ) : ?>
 	<link rel="icon" href="<?php echo User::get_by_name( 'admin' )->info->imageurl; ?>" type="image/png"> 
